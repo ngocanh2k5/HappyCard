@@ -3,7 +3,9 @@
 // =========================================================
 const SUPABASE_URL = 'https://dvetgpjcqcjamslvjiuf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_bCC1heNzUdnSNgHCNZcUhg_pI_XPRcg';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// SỬA LỖI: Đổi tên biến 'supabase' thành 'db' để không bị đụng hàng với thư viện hệ thống
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Biến toàn cục lưu danh sách gốc để phục vụ tính năng Lọc
 let tatCaMauThiep = [];
@@ -20,7 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // 2. TẢI VÀ HIỂN THỊ MẪU THIỆP (TỪ BẢNG mau_thiep)
 // =========================================================
 async function taiDanhSachMauThiep() {
-    const { data, error } = await supabase
+    // Sử dụng biến db thay cho supabase
+    const { data, error } = await db
         .from('mau_thiep')
         .select('*')
         .order('ma_code', { ascending: true });
@@ -108,8 +111,8 @@ function xuLyFormDatHang() {
             yeu_cau_customize: document.getElementById('yeu_cau_customize').value.trim()
         };
 
-        // Bắn dữ liệu lên Supabase
-        const { error } = await supabase.from('don_dat_hang').insert([donHangMoi]);
+        // Sử dụng biến db thay cho supabase
+        const { error } = await db.from('don_dat_hang').insert([donHangMoi]);
 
         if (error) {
             alert('Có lỗi xảy ra: ' + error.message);
@@ -130,8 +133,8 @@ function xuLyFormDatHang() {
 // 4. HIỂN THỊ BẢNG ĐƠN HÀNG (TỪ BẢNG don_dat_hang)
 // =========================================================
 async function taiDanhSachDonHang() {
-    // Chỉ lấy 7 đơn mới nhất để hiển thị ra bảng
-    const { data, error } = await supabase
+    // Sử dụng biến db thay cho supabase
+    const { data, error } = await db
         .from('don_dat_hang')
         .select('*')
         .order('id', { ascending: false })
@@ -149,62 +152,4 @@ async function taiDanhSachDonHang() {
         return;
     }
 
-    tbody.innerHTML = '';
-    data.forEach(don => {
-        tbody.innerHTML += `
-            <tr>
-                <td>#${don.id}</td>
-                <td><strong>${don.ten_khach_hang}</strong></td>
-                <td>${don.so_dien_thoai}</td>
-                <td>${don.ma_code_thiep}</td>
-                <td>${don.so_luong_in}</td>
-                <td class="tien-te">${parseInt(don.tong_tien).toLocaleString()} đ</td>
-                <td><span class="status-badge">${don.trang_thai}</span></td>
-            </tr>
-        `;
-    });
-}
-
-// =========================================================
-// 5. VẼ BIỂU ĐỒ THỐNG KÊ (SỬ DỤNG CHART.JS)
-// =========================================================
-function veBieuDoChartJS(danhSach) {
-    const ctx = document.getElementById('chart-luot-dat').getContext('2d');
-    
-    // Tìm ra 5 mẫu thiệp có lượt đặt in cao nhất
-    const top5 = [...danhSach]
-        .sort((a, b) => b.luot_dat_mua - a.luot_dat_mua)
-        .slice(0, 5);
-
-    const nhanBieuDo = top5.map(t => t.ma_code + ' - ' + t.ten_thiep);
-    const duLieuBieuDo = top5.map(t => t.luot_dat_mua);
-
-    // Xóa biểu đồ cũ nếu có để vẽ lại bản cập nhật mới
-    if (bieuDoThongKe) {
-        bieuDoThongKe.destroy();
-    }
-
-    bieuDoThongKe = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: nhanBieuDo,
-            datasets: [{
-                label: 'Tổng lượt đặt in thiệp',
-                data: duLieuBieuDo,
-                backgroundColor: 'rgba(194, 24, 91, 0.6)',
-                borderColor: '#c2185b',
-                borderWidth: 1,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
+    tbody.
