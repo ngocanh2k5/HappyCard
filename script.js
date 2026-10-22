@@ -152,4 +152,62 @@ async function taiDanhSachDonHang() {
         return;
     }
 
-    tbody.
+    tbody.innerHTML = '';
+    data.forEach(don => {
+        tbody.innerHTML += `
+            <tr>
+                <td>#${don.id}</td>
+                <td><strong>${don.ten_khach_hang}</strong></td>
+                <td>${don.so_dien_thoai}</td>
+                <td>${don.ma_code_thiep}</td>
+                <td>${don.so_luong_in}</td>
+                <td class="tien-te">${parseInt(don.tong_tien).toLocaleString()} đ</td>
+                <td><span class="status-badge">${don.trang_thai}</span></td>
+            </tr>
+        `;
+    });
+}
+
+// =========================================================
+// 5. VẼ BIỂU ĐỒ THỐNG KÊ (SỬ DỤNG CHART.JS)
+// =========================================================
+function veBieuDoChartJS(danhSach) {
+    const ctx = document.getElementById('chart-luot-dat').getContext('2d');
+    
+    // Tìm ra 5 mẫu thiệp có lượt đặt in cao nhất
+    const top5 = [...danhSach]
+        .sort((a, b) => b.luot_dat_mua - a.luot_dat_mua)
+        .slice(0, 5);
+
+    const nhanBieuDo = top5.map(t => t.ma_code + ' - ' + t.ten_thiep);
+    const duLieuBieuDo = top5.map(t => t.luot_dat_mua);
+
+    // Xóa biểu đồ cũ nếu có để vẽ lại bản cập nhật mới
+    if (bieuDoThongKe) {
+        bieuDoThongKe.destroy();
+    }
+
+    bieuDoThongKe = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: nhanBieuDo,
+            datasets: [{
+                label: 'Tổng lượt đặt in thiệp',
+                data: duLieuBieuDo,
+                backgroundColor: 'rgba(194, 24, 91, 0.6)',
+                borderColor: '#c2185b',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
