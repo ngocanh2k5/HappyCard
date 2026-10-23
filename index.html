@@ -4,13 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chung Đôi - Thiệp Cưới Cao Cấp</title>
-    <!-- Nhúng Font chữ hiển thị cho thiệp cưới -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font chữ (đã bỏ Segoe UI vì không thuộc Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <!-- Nhúng file CSS -->
     <link rel="stylesheet" href="style.css">
     <!-- Nhúng thư viện Supabase và Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS bổ sung cho khung Xem trước mẫu (không cần sửa style.css) -->
+    <style>
+        #grid-mau-thiep .card { cursor: pointer; transition: transform .2s, box-shadow .2s; }
+        #grid-mau-thiep .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+        .hint-text { text-align: center; color: #888; font-size: .9rem; margin: -6px 0 16px; }
+
+        .preview-overlay {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,.65); align-items: center; justify-content: center; padding: 16px;
+        }
+        .preview-overlay.open { display: flex; }
+        .preview-modal {
+            background: #fff; border-radius: 12px; max-width: 880px; width: 100%; max-height: 92vh;
+            overflow: auto; display: flex; flex-wrap: wrap; position: relative;
+        }
+        .preview-modal .pv-img-wrap { flex: 1 1 380px; background: #faf3f5; display: flex; align-items: center; justify-content: center; }
+        .preview-modal .pv-img-wrap img { max-width: 100%; max-height: 80vh; object-fit: contain; display: block; }
+        .preview-modal .pv-info { flex: 1 1 280px; padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; }
+        .pv-badge { align-self: flex-start; background: #fff0f3; color: #c2185b; padding: 4px 12px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
+        .pv-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; margin: 0; color: #333; }
+        .pv-price { font-size: 1.4rem; font-weight: 700; color: #c2185b; }
+        .pv-sold { color: #666; }
+        .pv-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+        .pv-btn-order { background: #c2185b; color: #fff; border: 0; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .pv-btn-order:hover { background: #a01049; }
+        .pv-btn-close { background: #eee; color: #333; border: 0; padding: 10px; border-radius: 6px; cursor: pointer; }
+        .pv-x { position: absolute; top: 8px; right: 12px; font-size: 1.8rem; line-height: 1; background: none; border: 0; cursor: pointer; color: #555; z-index: 2; }
+    </style>
 </head>
 <body>
 
@@ -21,7 +50,7 @@
             <li><a href="#bo-suu-tap">Mẫu Thiệp</a></li>
             <li><a href="#dat-hang">Đặt In</a></li>
             <li><a href="#don-hang">Đơn Hàng</a></li>
-            <li><a href="#thong-ke">Biểu Đồ</a></li>
+            <li><a href="#thong-ke">Xu Hướng</a></li>
         </ul>
     </nav>
 
@@ -32,10 +61,10 @@
     </header>
 
     <div class="container">
-        <!-- KHU VỰC 1: BỘ SƯU TẬP (Hiển thị qua renderTheThiep() & filter-phong-cach) -->
+        <!-- KHU VỰC 1: BỘ SƯU TẬP + XEM MẪU TRƯỚC -->
         <section id="bo-suu-tap" class="section-box">
             <h2 class="section-title">Bộ Sưu Tập Mẫu Thiệp</h2>
-            
+
             <div class="filter-container">
                 <label for="filter-phong-cach">Lọc theo phong cách: </label>
                 <select id="filter-phong-cach" class="form-input filter-select">
@@ -49,17 +78,18 @@
                     <option value="Hoàng gia châu Âu">Hoàng gia châu Âu</option>
                 </select>
             </div>
+            <p class="hint-text">👆 Nhấn vào một mẫu thiệp để xem trước và chọn đặt in</p>
 
             <div id="grid-mau-thiep" class="grid-cards">
                 <p style="text-align: center; width: 100%; color: #888;">Đang tải danh sách mẫu thiệp từ hệ thống...</p>
             </div>
         </section>
 
-        <!-- KHU VỰC 2: FORM ĐẶT HÀNG (Dữ liệu gửi lên bảng don_dat_hang) -->
+        <!-- KHU VỰC 2: FORM ĐẶT HÀNG -->
         <section id="dat-hang" class="section-box order-section">
             <h2 class="section-title">Đặt In Thiệp Cưới</h2>
             <p class="promo-text">🎁 Ưu đãi đặc biệt: Giảm ngay 10% khi đặt in từ 500 thiệp trở lên!</p>
-            
+
             <form id="form-dat-hang" class="order-form">
                 <div class="form-row">
                     <div class="form-group">
@@ -85,7 +115,7 @@
                     </div>
                 </div>
 
-                <!-- Bổ sung khối Preview tóm tắt chi phí dự tính cho khách -->
+                <!-- Tóm tắt chi phí dự tính -->
                 <div class="order-summary-box" style="background: #fff0f3; padding: 12px 16px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #c2185b;">
                     <div>Đơn giá mẫu: <strong id="preview-don-gia">0 đ</strong></div>
                     <div style="margin-top: 4px;">Tổng tiền tạm tính: <strong id="preview-tong-tien" style="color: #c2185b; font-size: 1.15rem;">0 đ</strong></div>
@@ -101,7 +131,7 @@
             </form>
         </section>
 
-        <!-- KHU VỰC 3: QUẢN LÝ ĐƠN HÀNG (Hiển thị qua taiDanhSachDonHang()) -->
+        <!-- KHU VỰC 3: BẢNG ĐƠN HÀNG -->
         <section id="don-hang" class="section-box">
             <h2 class="section-title">Danh Sách Đơn Hàng Mới Nhất</h2>
             <div class="table-responsive">
@@ -124,7 +154,7 @@
             </div>
         </section>
 
-        <!-- KHU VỰC 4: THỐNG KÊ (Hiển thị qua veBieuDoChartJS()) -->
+        <!-- KHU VỰC 4: BIỂU ĐỒ THỐNG KÊ -->
         <section id="thong-ke" class="section-box">
             <h2 class="section-title">Thống Kê Top 5 Mẫu Thiệp Bán Chạy Nhất</h2>
             <div class="chart-wrapper" style="position: relative; height: 360px;">
@@ -133,11 +163,106 @@
         </section>
     </div>
 
+    <!-- KHUNG XEM TRƯỚC MẪU THIỆP (popup) -->
+    <div id="preview-overlay" class="preview-overlay" aria-hidden="true">
+        <div class="preview-modal" role="dialog" aria-modal="true" aria-labelledby="pv-title">
+            <button type="button" class="pv-x" id="pv-x" aria-label="Đóng">&times;</button>
+            <div class="pv-img-wrap"><img id="pv-img" src="" alt=""></div>
+            <div class="pv-info">
+                <span class="pv-badge" id="pv-badge"></span>
+                <h3 class="pv-title" id="pv-title"></h3>
+                <div class="pv-price" id="pv-price"></div>
+                <div class="pv-sold" id="pv-sold"></div>
+                <div class="pv-actions">
+                    <button type="button" class="pv-btn-order" id="pv-order">💍 Chọn mẫu này để đặt in</button>
+                    <button type="button" class="pv-btn-close" id="pv-close">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>© 2026 Cửa Hàng Thiệp Cưới Chung Đôi. Bài tập lớn môn Internet và các giao thức.</p>
     </footer>
 
-    <!-- Nhúng file JS -->
+    <!-- Nhúng file JS chính (của bạn nhóm) -->
     <script src="script.js"></script>
+
+    <!-- JS bổ sung cho phần HTML: xem trước mẫu + tạm tính tiền. Chạy sau script.js, không sửa script.js -->
+    <script>
+    (function () {
+        const $ = (id) => document.getElementById(id);
+        const overlay = $('preview-overlay');
+        let tenThiepDangXem = '';
+
+        // ---------- 1. XEM TRƯỚC MẪU ----------
+        // Dùng event delegation vì thẻ .card được JS chính tạo động
+        $('grid-mau-thiep').addEventListener('click', (e) => {
+            const card = e.target.closest('.card');
+            if (!card) return;
+            const q = (sel) => card.querySelector(sel);
+
+            const img = q('.card-img');
+            $('pv-img').src = img ? img.src : '';
+            $('pv-img').alt = img ? img.alt : '';
+            $('pv-badge').textContent = q('.card-badge') ? q('.card-badge').textContent : '';
+            tenThiepDangXem = q('.card-title') ? q('.card-title').textContent : '';
+            $('pv-title').textContent = tenThiepDangXem;
+            $('pv-price').textContent = q('.card-price') ? q('.card-price').textContent : '';
+            $('pv-sold').textContent = q('.card-orders') ? q('.card-orders').textContent : '';
+
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function dongPreview() {
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+        $('pv-x').addEventListener('click', dongPreview);
+        $('pv-close').addEventListener('click', dongPreview);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) dongPreview(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dongPreview(); });
+
+        // Nút "Chọn mẫu này": chọn sẵn mẫu trong form rồi cuộn xuống phần đặt hàng
+        $('pv-order').addEventListener('click', () => {
+            const select = $('chon_mau_thiep');
+            for (const opt of select.options) {
+                if (opt.value && opt.textContent.includes('] ' + tenThiepDangXem + ' -')) {
+                    select.value = opt.value;
+                    break;
+                }
+            }
+            dongPreview();
+            capNhatTamTinh();
+            $('dat-hang').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // ---------- 2. TẠM TÍNH TIỀN ----------
+        function capNhatTamTinh() {
+            const ma = $('chon_mau_thiep').value;
+            const soLuong = parseInt($('so_luong').value) || 0;
+            const ds = (typeof tatCaMauThiep !== 'undefined') ? tatCaMauThiep : [];
+            const thiep = ds.find((t) => t.ma_code === ma);
+            const donGia = thiep ? Number(thiep.gia_tien) : 0;
+
+            let tong = donGia * soLuong;
+            if (soLuong >= 500) {
+                tong *= 0.9;
+                $('preview-giam-gia').textContent = '🎉 Đã áp dụng giảm 10% (từ 500 thiệp)';
+            } else {
+                $('preview-giam-gia').textContent = '';
+            }
+            $('preview-don-gia').textContent = donGia.toLocaleString() + ' đ';
+            $('preview-tong-tien').textContent = Math.round(tong).toLocaleString() + ' đ';
+        }
+
+        $('chon_mau_thiep').addEventListener('change', capNhatTamTinh);
+        $('so_luong').addEventListener('input', capNhatTamTinh);
+        $('form-dat-hang').addEventListener('reset', () => setTimeout(capNhatTamTinh, 0));
+    })();
+    </script>
 </body>
 </html>
