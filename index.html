@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chung Đôi - Thiệp Cưới Cao Cấp</title>
-    <!-- Nhúng Font chữ lãng mạn cho thiệp cưới -->
+    <!-- Nhúng Font chữ hiển thị cho thiệp cưới -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
     <!-- Nhúng file CSS -->
     <link rel="stylesheet" href="style.css">
@@ -20,7 +20,8 @@
         <ul class="nav-links">
             <li><a href="#bo-suu-tap">Mẫu Thiệp</a></li>
             <li><a href="#dat-hang">Đặt In</a></li>
-            <li><a href="#thong-ke">Quản Lý</a></li>
+            <li><a href="#don-hang">Đơn Hàng</a></li>
+            <li><a href="#thong-ke">Biểu Đồ</a></li>
         </ul>
     </nav>
 
@@ -31,7 +32,7 @@
     </header>
 
     <div class="container">
-        <!-- KHU VỰC 1: BỘ SƯU TẬP (Đổ dữ liệu từ Supabase) -->
+        <!-- KHU VỰC 1: BỘ SƯU TẬP (Hiển thị qua renderTheThiep() & filter-phong-cach) -->
         <section id="bo-suu-tap" class="section-box">
             <h2 class="section-title">Bộ Sưu Tập Mẫu Thiệp</h2>
             
@@ -54,7 +55,7 @@
             </div>
         </section>
 
-        <!-- KHU VỰC 2: FORM ĐẶT HÀNG (E-Form đẩy lên Supabase) -->
+        <!-- KHU VỰC 2: FORM ĐẶT HÀNG (Dữ liệu gửi lên bảng don_dat_hang) -->
         <section id="dat-hang" class="section-box order-section">
             <h2 class="section-title">Đặt In Thiệp Cưới</h2>
             <p class="promo-text">🎁 Ưu đãi đặc biệt: Giảm ngay 10% khi đặt in từ 500 thiệp trở lên!</p>
@@ -62,30 +63,37 @@
             <form id="form-dat-hang" class="order-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Họ và tên Cô Dâu & Chú Rể *</label>
+                        <label for="ten_khach">Họ và tên Cô Dâu & Chú Rể *</label>
                         <input type="text" id="ten_khach" class="form-input" placeholder="VD: Nguyễn Văn A & Trần Thị B" required>
                     </div>
                     <div class="form-group">
-                        <label>Số điện thoại liên hệ *</label>
-                        <input type="tel" id="so_dien_thoai" class="form-input" placeholder="VD: 0912345678" required>
+                        <label for="so_dien_thoai">Số điện thoại liên hệ *</label>
+                        <input type="tel" id="so_dien_thoai" class="form-input" placeholder="VD: 0912345678" pattern="[0-9]{10,11}" title="Vui lòng nhập 10-11 chữ số" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Chọn mẫu thiệp muốn in *</label>
+                        <label for="chon_mau_thiep">Chọn mẫu thiệp muốn in *</label>
                         <select id="chon_mau_thiep" class="form-input" required>
                             <option value="">-- Đang nạp danh sách mẫu --</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Số lượng thiệp (Tối thiểu 50) *</label>
-                        <input type="number" id="so_luong" class="form-input" min="50" value="100" required>
+                        <label for="so_luong">Số lượng thiệp (Tối thiểu 50) *</label>
+                        <input type="number" id="so_luong" class="form-input" min="50" step="10" value="100" required>
                     </div>
                 </div>
 
+                <!-- Bổ sung khối Preview tóm tắt chi phí dự tính cho khách -->
+                <div class="order-summary-box" style="background: #fff0f3; padding: 12px 16px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #c2185b;">
+                    <div>Đơn giá mẫu: <strong id="preview-don-gia">0 đ</strong></div>
+                    <div style="margin-top: 4px;">Tổng tiền tạm tính: <strong id="preview-tong-tien" style="color: #c2185b; font-size: 1.15rem;">0 đ</strong></div>
+                    <small id="preview-giam-gia" style="display: block; color: #2e7d32; font-weight: 600; margin-top: 4px;"></small>
+                </div>
+
                 <div class="form-group">
-                    <label>Yêu cầu chỉnh sửa thêm (Customize)</label>
+                    <label for="yeu_cau_customize">Yêu cầu chỉnh sửa thêm (Customize)</label>
                     <textarea id="yeu_cau_customize" class="form-input" rows="3" placeholder="VD: Đổi font chữ sang viền vàng kim, thêm mã QR Google Maps ở mặt sau..."></textarea>
                 </div>
 
@@ -93,8 +101,8 @@
             </form>
         </section>
 
-        <!-- KHU VỰC 3: QUẢN LÝ ĐƠN HÀNG (Bảng dữ liệu) -->
-        <section id="thong-ke" class="section-box">
+        <!-- KHU VỰC 3: QUẢN LÝ ĐƠN HÀNG (Hiển thị qua taiDanhSachDonHang()) -->
+        <section id="don-hang" class="section-box">
             <h2 class="section-title">Danh Sách Đơn Hàng Mới Nhất</h2>
             <div class="table-responsive">
                 <table class="data-table">
@@ -116,10 +124,10 @@
             </div>
         </section>
 
-        <!-- KHU VỰC 4: THỐNG KÊ (Biểu đồ Chart.js) -->
-        <section class="section-box">
+        <!-- KHU VỰC 4: THỐNG KÊ (Hiển thị qua veBieuDoChartJS()) -->
+        <section id="thong-ke" class="section-box">
             <h2 class="section-title">Thống Kê Top 5 Mẫu Thiệp Bán Chạy Nhất</h2>
-            <div class="chart-wrapper">
+            <div class="chart-wrapper" style="position: relative; height: 360px;">
                 <canvas id="chart-luot-dat"></canvas>
             </div>
         </section>
