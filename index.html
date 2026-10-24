@@ -90,6 +90,18 @@
         .ct-row:first-child [data-a="up"], .ct-row:last-child [data-a="down"] { visibility: hidden; }
         .ct-add { border: 1px dashed #c2185b; color: #c2185b; background: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
         @media (max-width: 640px) { .ct-grid, .ct-photos { grid-template-columns: 1fr; } }
+        /* ===== Chi tiết đơn hàng (popup) ===== */
+        #tbody-don-hang tr { cursor: pointer; }
+        #tbody-don-hang tr:hover td { background: #fff0f3; }
+        .od-modal { background: #fff; border-radius: 12px; max-width: 620px; width: 100%; max-height: 92vh; overflow: auto; position: relative; padding: 26px 26px 22px; }
+        .od-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin: 0 0 14px; color: #333; }
+        .od-list { display: grid; grid-template-columns: 150px 1fr; gap: 10px 14px; margin: 0; }
+        .od-list dt { color: #888; font-weight: 600; }
+        .od-list dd { margin: 0; color: #222; word-break: break-word; }
+        .od-list dd.od-money { color: #c2185b; font-weight: 700; font-size: 1.1rem; }
+        .od-note { white-space: pre-wrap; background: #faf5f7; border-left: 4px solid #c2185b; border-radius: 6px; padding: 12px 14px; margin-top: 4px; line-height: 1.55; }
+        .od-msg { text-align: center; color: #888; padding: 24px 0; }
+        @media (max-width: 560px) { .od-list { grid-template-columns: 1fr; gap: 2px; } .od-list dd { margin-bottom: 10px; } }
     </style>
 </head>
 <body>
@@ -102,6 +114,7 @@
             <li><a href="#dat-hang">Đặt In</a></li>
             <li><a href="#don-hang">Đơn Hàng</a></li>
             <li><a href="#thong-ke">Xu Hướng</a></li>
+            <li><a href="#" id="admin-toggle">🔒 Quản trị</a></li>
         </ul>
     </nav>
 
@@ -326,6 +339,7 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         <!-- KHU VỰC 3: BẢNG ĐƠN HÀNG -->
         <section id="don-hang" class="section-box">
             <h2 class="section-title">Danh Sách Đơn Hàng Mới Nhất</h2>
+            <p class="hint-text">👆 Nhấn vào một đơn hàng để xem toàn bộ thông tin</p>
             <div class="table-responsive">
                 <table class="data-table">
                     <thead>
@@ -370,6 +384,31 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                     <button type="button" class="pv-btn-close" id="pv-close">Đóng</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ĐĂNG NHẬP QUẢN TRỊ (popup) -->
+    <div id="ad-overlay" class="preview-overlay" aria-hidden="true">
+        <div class="od-modal" style="max-width:400px;" role="dialog" aria-modal="true" aria-labelledby="ad-title">
+            <button type="button" class="pv-x" id="ad-x" aria-label="Đóng">&times;</button>
+            <h3 class="od-title" id="ad-title">Đăng nhập quản trị</h3>
+            <p class="ct-hint" style="margin:0 0 14px;">Chỉ quản trị viên mới xem được số điện thoại đầy đủ và nội dung thiệp của khách.</p>
+            <form id="ad-form">
+                <div class="form-group"><label for="ad-email">Email</label><input type="email" id="ad-email" class="form-input" autocomplete="username" required></div>
+                <div class="form-group"><label for="ad-pass">Mật khẩu</label><input type="password" id="ad-pass" class="form-input" autocomplete="current-password" required></div>
+                <p id="ad-err" style="color:#c62828;font-weight:600;margin:0 0 10px;min-height:1.2em;"></p>
+                <button type="submit" id="ad-submit" class="btn-primary">ĐĂNG NHẬP</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CHI TIẾT ĐƠN HÀNG (popup) -->
+    <div id="od-overlay" class="preview-overlay" aria-hidden="true">
+        <div class="od-modal" role="dialog" aria-modal="true" aria-labelledby="od-title">
+            <button type="button" class="pv-x" id="od-x" aria-label="Đóng">&times;</button>
+            <h3 class="od-title" id="od-title">Chi tiết đơn hàng</h3>
+            <div id="od-body"></div>
+            <div style="margin-top:18px;"><button type="button" class="pv-btn-close" id="od-close" style="width:100%;">Đóng</button></div>
         </div>
     </div>
 
@@ -639,6 +678,133 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             tiecTruoc = 'Tiệc cưới';
             secs.forEach((s) => s.classList.toggle('off', !isOn(s)));
         }, 0));
+    })();
+    </script>
+    <!-- JS: chế độ quản trị (Supabase Auth). Khách thường thấy SĐT bị che và không xem được nội dung thiệp -->
+    <script>
+    (function () {
+        const $ = (id) => document.getElementById(id);
+        const QT = window.QT = { isAdmin: false };
+        QT.maskPhone = (p) => { p = String(p == null ? '' : p); return p.length > 6 ? p.slice(0, 3) + '*'.repeat(p.length - 6) + p.slice(-3) : p; };
+
+        const toggle = $('admin-toggle'), ov = $('ad-overlay'), err = $('ad-err'), tb = $('tbody-don-hang');
+        const moPopup = () => { err.textContent = ''; ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; setTimeout(() => $('ad-email').focus(), 50); };
+        const dongPopup = () => { ov.classList.remove('open'); ov.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; };
+        $('ad-x').addEventListener('click', dongPopup);
+        ov.addEventListener('click', (e) => { if (e.target === ov) dongPopup(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov.classList.contains('open')) dongPopup(); });
+
+        // Che số điện thoại (cột thứ 3) mỗi khi bảng được vẽ lại
+        function apDungMask() {
+            if (QT.isAdmin) return;
+            [].forEach.call(tb.querySelectorAll('tr'), (tr) => {
+                const c = tr.cells[2];
+                if (c && /^\d{7,}$/.test(c.textContent.trim())) c.textContent = QT.maskPhone(c.textContent.trim());
+            });
+        }
+        new MutationObserver(apDungMask).observe(tb, { childList: true });
+
+        const taiLaiBang = () => { if (typeof taiDanhSachDonHang === 'function') taiDanhSachDonHang(); };
+        function capNhatUI() { toggle.textContent = QT.isAdmin ? '🔓 Đăng xuất' : '🔒 Quản trị'; }
+
+        toggle.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!QT.isAdmin) { moPopup(); return; }
+            try { await db.auth.signOut(); } catch (x) {}
+            QT.isAdmin = false; capNhatUI(); taiLaiBang();
+        });
+
+        $('ad-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = $('ad-submit');
+            btn.disabled = true; err.textContent = '';
+            try {
+                const { error } = await db.auth.signInWithPassword({ email: $('ad-email').value.trim(), password: $('ad-pass').value });
+                if (error) { err.textContent = 'Đăng nhập thất bại: ' + error.message; }
+                else { QT.isAdmin = true; $('ad-pass').value = ''; dongPopup(); capNhatUI(); taiLaiBang(); }
+            } catch (x) { err.textContent = 'Không kết nối được hệ thống: ' + x.message; }
+            btn.disabled = false;
+        });
+
+        // Khôi phục phiên đăng nhập cũ (nếu có)
+        (async () => {
+            try {
+                const { data } = await db.auth.getSession();
+                if (data && data.session) { QT.isAdmin = true; capNhatUI(); taiLaiBang(); }
+            } catch (x) {}
+        })();
+    })();
+    </script>
+    <!-- JS: bấm vào một dòng trong bảng đơn hàng để xem toàn bộ thông tin đơn -->
+    <script>
+    (function () {
+        const $ = (id) => document.getElementById(id);
+        const overlay = $('od-overlay'), body = $('od-body');
+        let token = 0;
+
+        const NHAN = {
+            id: 'Mã đơn', ten_khach_hang: 'Khách hàng', so_dien_thoai: 'Số điện thoại',
+            ma_code_thiep: 'Mẫu thiệp', so_luong_in: 'Số lượng in', tong_tien: 'Tổng tiền',
+            trang_thai: 'Trạng thái', created_at: 'Ngày đặt', ngay_dat: 'Ngày đặt', yeu_cau_customize: 'Yêu cầu / Nội dung thiệp'
+        };
+        const THU_TU = ['id', 'ten_khach_hang', 'so_dien_thoai', 'ma_code_thiep', 'so_luong_in', 'tong_tien', 'trang_thai', 'created_at', 'ngay_dat', 'yeu_cau_customize'];
+
+        function mo() { overlay.classList.add('open'); overlay.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
+        function dong() { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; token++; }
+        $('od-x').addEventListener('click', dong);
+        $('od-close').addEventListener('click', dong);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) dong(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) dong(); });
+
+        function thongBao(text) { body.innerHTML = ''; const d = document.createElement('div'); d.className = 'od-msg'; d.textContent = text; body.appendChild(d); }
+
+        function hienThi(don) {
+            body.innerHTML = '';
+            const admin = !!(window.QT && window.QT.isAdmin);
+            const dl = document.createElement('dl'); dl.className = 'od-list';
+            const them = (k, v) => {
+                if (v === null || v === undefined || v === '') return;
+                const dt = document.createElement('dt'); dt.textContent = NHAN[k] || k;
+                const dd = document.createElement('dd');
+                if (k === 'id') dd.textContent = '#' + v;
+                else if (k === 'tong_tien') { dd.className = 'od-money'; dd.textContent = parseInt(v).toLocaleString() + ' đ'; }
+                else if (k === 'so_luong_in') dd.textContent = Number(v).toLocaleString() + ' thiệp';
+                else if (k === 'created_at' || k === 'ngay_dat') { const t = new Date(v); dd.textContent = isNaN(t) ? String(v) : t.toLocaleString('vi-VN'); }
+                else if (k === 'ma_code_thiep') {
+                    const ds = (typeof tatCaMauThiep !== 'undefined') ? tatCaMauThiep : [];
+                    const m = ds.find((t) => t.ma_code === v);
+                    dd.textContent = m ? '[' + v + '] ' + m.ten_thiep + ' (' + m.phong_cach + ')' : String(v);
+                }
+                else if (k === 'so_dien_thoai') dd.textContent = admin ? String(v) : window.QT.maskPhone(v);
+                else if (k === 'yeu_cau_customize') { dd.className = 'od-note'; dd.textContent = String(v); }
+                else dd.textContent = String(v);
+                dl.appendChild(dt); dl.appendChild(dd);
+            };
+            THU_TU.forEach((k) => { if (!admin && k === 'yeu_cau_customize') return; them(k, don[k]); });
+            if (admin) Object.keys(don).forEach((k) => { if (THU_TU.indexOf(k) < 0) them(k, don[k]); });
+            if (!admin) { const dt = document.createElement('dt'); dt.textContent = NHAN.yeu_cau_customize; const dd = document.createElement('dd'); dd.textContent = '🔒 Chỉ quản trị viên mới xem được (đăng nhập ở mục Quản trị trên menu)'; dl.appendChild(dt); dl.appendChild(dd); }
+            else if (!don.yeu_cau_customize) { const dt = document.createElement('dt'); dt.textContent = NHAN.yeu_cau_customize; const dd = document.createElement('dd'); dd.textContent = 'Không có'; dl.appendChild(dt); dl.appendChild(dd); }
+            body.appendChild(dl);
+        }
+
+        $('tbody-don-hang').addEventListener('click', async (e) => {
+            const tr = e.target.closest('tr');
+            if (!tr || !tr.cells.length) return;
+            const m = /^#(\d+)$/.exec(tr.cells[0].textContent.trim());
+            if (!m) return;
+            const id = parseInt(m[1], 10), my = ++token;
+            $('od-title').textContent = 'Chi tiết đơn hàng #' + id;
+            thongBao('Đang tải thông tin đơn hàng...');
+            mo();
+            try {
+                const { data, error } = await db.from('don_dat_hang').select('*').eq('id', id).single();
+                if (my !== token) return;
+                if (error || !data) { thongBao('Không tải được đơn hàng' + (error ? ': ' + error.message : '.')); return; }
+                hienThi(data);
+            } catch (err) {
+                if (my === token) thongBao('Không tải được đơn hàng: ' + err.message);
+            }
+        });
     })();
     </script>
 </body>
