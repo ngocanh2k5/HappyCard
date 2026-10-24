@@ -1,0 +1,488 @@
+/* =========================================================
+   1. BIẾN TOÀN CỤC & RESET (TÔNG MÀU DREAMY / FAIRYCORE)
+   ========================================================= */
+:root {
+    --primary: #C78BCA;       
+    --primary-hover: #AD6EAF;
+    --text-dark: #5A4660;     
+    --text-muted: #8E7C95;
+    
+    /* Hiệu ứng Kính mờ (Glassmorphism) */
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-blur: blur(16px);
+    
+    --radius-lg: 20px;
+    --radius-sm: 12px;
+    --shadow-float: 0 15px 35px rgba(200, 160, 210, 0.3);
+    --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: fixed linear-gradient(135deg, #F4E8F8 0%, #E0F5F4 45%, #FCE7EE 100%);
+    color: var(--text-dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .logo, .card-title {
+    font-family: 'Playfair Display', serif;
+}
+
+/* =========================================================
+   2. NAVBAR - HIỆU ỨNG KÍNH SIÊU MỜ
+   ========================================================= */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 4px 30px rgba(180, 150, 200, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 5%;
+    transition: var(--transition-smooth);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #C78BCA, #88B2CC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+    padding-bottom: 4px;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; width: 0; height: 2px;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after { width: 100%; }
+.nav-links a:hover { color: var(--primary); }
+
+/* =========================================================
+   3. HERO BANNER - CINEMATIC MỜ ẢO (DREAMY OVERLAY)
+   ========================================================= */
+.hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    text-align: center;
+    color: white;
+    overflow: hidden;
+    margin-bottom: 80px;
+    padding: 0 20px;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: -10%; left: -10%; right: -10%; bottom: -10%;
+    background: url('https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1920&q=80') center/cover no-repeat;
+    z-index: -2;
+    animation: kenBurnsZoom 25s infinite alternate ease-in-out;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(200, 160, 220, 0.3) 0%, rgba(255, 180, 200, 0.5) 100%);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: -1;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 15px rgba(255, 255, 255, 0.6), 0 2px 5px rgba(0,0,0,0.2);
+    animation: fadeDown 1s ease-out;
+    color: #FFFFFF;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    font-weight: 500;
+    max-width: 650px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    animation: fadeUp 1s ease-out 0.3s both;
+}
+
+/* =========================================================
+   4. BỐ CỤC CHUNG & GLASS BOXES
+   ========================================================= */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section-box {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 60px 50px;
+    margin-bottom: 60px;
+    box-shadow: 0 8px 32px 0 rgba(190, 170, 210, 0.2);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 50px;
+    color: var(--text-dark);
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #C78BCA, #88B2CC);
+    margin: 20px auto 0;
+    border-radius: 5px;
+}
+
+/* =========================================================
+   5. GRID MẪU THIỆP - THẺ KÍNH (GLASS CARDS)
+   ========================================================= */
+.filter-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.filter-select {
+    padding: 12px 20px;
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 2px 15px rgba(200, 160, 210, 0.1);
+    transition: var(--transition-smooth);
+}
+.filter-select:hover { border-color: var(--primary); background: rgba(255, 255, 255, 0.8); }
+
+.grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(180, 160, 210, 0.15);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-smooth);
+    animation: fadeUpIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-float);
+    border-color: #FFFFFF;
+}
+
+.card-img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    opacity: 0.95; 
+    
+    /* Chuyển động demo tự động chạy liên tục vô tận */
+    animation: autoPan 15s infinite alternate ease-in-out;
+    
+    /* Làm đẹp tạm thời khi ảnh từ DB bị lỗi chưa hiển thị được */
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+    line-height: 340px; 
+}
+
+.card:hover .card-img {
+    animation-play-state: paused;
+    transform: scale(1.1) rotate(1deg);
+    opacity: 1;
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -150%; width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.7), rgba(255,255,255,0));
+    transform: skewX(-25deg);
+    z-index: 10; pointer-events: none;
+}
+.card:hover::before { animation: shimmer 0.8s ease-in-out forwards; }
+
+.card-body {
+    padding: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.card-badge {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255,255,255,0.8);
+}
+
+.card-title {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.card-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-hover);
+    margin-bottom: 15px;
+}
+
+.card-orders {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: auto;
+    width: 100%;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(200, 160, 210, 0.3);
+}
+
+/* =========================================================
+   6. FORM ĐẶT HÀNG (TRONG SUỐT)
+   ========================================================= */
+.order-section {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.promo-text {
+    text-align: center;
+    color: var(--primary-hover);
+    font-weight: 600;
+    margin-bottom: 35px;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+}
+
+.order-form { max-width: 800px; margin: 0 auto; }
+.form-row { display: flex; gap: 30px; }
+.form-group { flex: 1; margin-bottom: 25px; }
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px 20px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
+    transition: var(--transition-smooth);
+    outline: none;
+    font-family: inherit;
+    color: var(--text-dark);
+}
+
+.form-input:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(199, 139, 202, 0.2);
+}
+
+textarea.form-input { min-height: 120px; resize: vertical; }
+
+.btn-primary {
+    background: linear-gradient(45deg, #C78BCA, #9CA2CD);
+    color: white;
+    border: none;
+    padding: 18px;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: 0 8px 20px rgba(199, 139, 202, 0.3);
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(199, 139, 202, 0.4);
+    background: linear-gradient(45deg, #AD6EAF, #8189BD);
+}
+
+.btn-primary:disabled {
+    background: rgba(200, 200, 200, 0.5);
+    box-shadow: none; transform: none; cursor: not-allowed;
+}
+
+/* =========================================================
+   7. BẢNG DỮ LIỆU ĐƠN HÀNG (GLASS TABLE)
+   ========================================================= */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.4);
+    padding-bottom: 5px; 
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1050px; 
+}
+
+.data-table th, .data-table td {
+    padding: 20px 30px; 
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    white-space: nowrap; 
+}
+
+.data-table th {
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--text-dark);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table tr:hover td { background: rgba(255, 255, 255, 0.7); }
+.data-table tr:last-child td { border-bottom: none; }
+
+.tien-te {
+    font-weight: 700;
+    color: var(--primary-hover);
+}
+
+.status-badge {
+    background: rgba(255, 255, 255, 0.8);
+    color: #8C6A9E;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.9);
+    display: inline-block; 
+}
+
+/* =========================================================
+   8. THỐNG KÊ & FOOTER
+   ========================================================= */
+.chart-wrapper {
+    height: 450px;
+    width: 100%;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-sm);
+}
+
+footer {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* =========================================================
+   9. KEYFRAMES & RESPONSIVE
+   ========================================================= */
+@keyframes kenBurnsZoom { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUpIn { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer { 0% { left: -150%; } 100% { left: 150%; } }
+@keyframes autoPan {
+    0% { transform: scale(1) translate(0, 0); }
+    50% { transform: scale(1.08) translate(-2%, 2%); }
+    100% { transform: scale(1.02) translate(1%, -1%); }
+}
+
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hero { min-height: 60vh; padding-top: 100px; margin-bottom: 40px;}
+    .hero h1 { font-size: 2.5rem; }
+    .section-box { padding: 30px 20px; border-radius: 12px; }
+    .form-row { flex-direction: column; gap: 0; }
+    .filter-container { justify-content: flex-start; }
+}
