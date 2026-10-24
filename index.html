@@ -39,6 +39,57 @@
         .pv-btn-order:hover { background: #a01049; }
         .pv-btn-close { background: #eee; color: #333; border: 0; padding: 10px; border-radius: 6px; cursor: pointer; }
         .pv-x { position: absolute; top: 8px; right: 12px; font-size: 1.8rem; line-height: 1; background: none; border: 0; cursor: pointer; color: #555; z-index: 2; }
+    
+        /* ===== Nội dung thiệp (các mục thu gọn được) ===== */
+        .ct-wrap { margin: 8px 0 18px; }
+        .ct-heading { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0 0 4px; color: #333; }
+        .ct-sub { color: #777; font-size: .9rem; margin: 0 0 12px; }
+        .ct-sec { border: 1px solid #e3d6db; border-radius: 12px; background: #fbf8f9; margin-bottom: 12px; overflow: hidden; }
+        .ct-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; user-select: none; }
+        .ct-chev { transition: transform .2s; color: #555; font-size: .9rem; }
+        .ct-sec.collapsed .ct-chev { transform: rotate(-90deg); }
+        .ct-name { font-weight: 700; color: #222; flex: 1; }
+        .ct-body { padding: 4px 16px 18px; }
+        .ct-sec.collapsed .ct-body { display: none; }
+        .ct-sec.off .ct-body { opacity: .45; pointer-events: none; }
+        .ct-switch { display: flex; align-items: center; gap: 8px; color: #888; font-size: .9rem; cursor: pointer; }
+        .ct-switch input { display: none; }
+        .ct-switch i { width: 44px; height: 24px; border: 1px solid #c2185b; border-radius: 14px; position: relative; background: #fff; transition: .2s; }
+        .ct-switch i::after { content: ''; position: absolute; top: 3px; left: 4px; width: 16px; height: 16px; border-radius: 50%; background: #bbb; transition: .2s; }
+        .ct-switch input:checked + i::after { left: 23px; background: #c2185b; }
+
+        .ct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+        .ct-grid.time { grid-template-columns: 140px 1fr; }
+        .ct-body .lb, .ct-body .lbw > span { display: block; font-weight: 600; font-size: .9rem; margin: 0 0 6px; color: #222; }
+        .ct-body .lbw { display: block; }
+        .ct-body .form-input { width: 100%; box-sizing: border-box; }
+        .ct-hint { color: #888; font-size: .85rem; margin: 6px 0 0; }
+        .ct-tip { background: #efe9eb; border-radius: 10px; padding: 12px 14px; color: #666; margin: 10px 0 12px; }
+        .ct-sep { border: 0; border-top: 2px solid #e3d6db; margin: 18px 0; }
+        .ct-subt { font-weight: 700; color: #888; margin: 6px 0 10px; }
+        .is-auto { background: #eee !important; color: #888; }
+        .ct-inputwrap { position: relative; }
+        .ct-reset { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: 0; background: none; cursor: pointer; color: #777; font-size: 1.1rem; }
+        .ct-reset[hidden] { display: none; }
+
+        .seg { display: flex; background: #e8e3e5; border-radius: 12px; padding: 4px; gap: 4px; }
+        .seg label { flex: 1; margin: 0; }
+        .seg input { display: none; }
+        .seg span { display: block; text-align: center; padding: 10px 6px; border-radius: 9px; color: #888; font-weight: 700; cursor: pointer; }
+        .seg input:checked + span { background: #fff; color: #222; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+
+        .ct-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; text-align: center; }
+        .ct-circle { width: 150px; height: 150px; margin: 8px auto 12px; border-radius: 50%; background: #e4e0e2; border: 2px solid #d0c9cc; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 2rem; color: #999; }
+        .ct-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .ct-upbtn { display: inline-block; border: 1px solid #c2185b; color: #c2185b; font-weight: 700; padding: 8px 20px; border-radius: 8px; cursor: pointer; background: #fff; }
+
+        .ct-row { border: 1px solid #e3d6db; background: #f3eef0; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+        .ct-row-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: #666; font-weight: 700; }
+        .ct-row-tools button { border: 0; background: none; cursor: pointer; color: #666; font-size: .95rem; padding: 2px 6px; }
+        .ct-row-tools [data-a="del"] { color: #e57373; }
+        .ct-row:first-child [data-a="up"], .ct-row:last-child [data-a="down"] { visibility: hidden; }
+        .ct-add { border: 1px dashed #c2185b; color: #c2185b; background: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        @media (max-width: 640px) { .ct-grid, .ct-photos { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -120,6 +171,147 @@
                     <div>Đơn giá mẫu: <strong id="preview-don-gia">0 đ</strong></div>
                     <div style="margin-top: 4px;">Tổng tiền tạm tính: <strong id="preview-tong-tien" style="color: #c2185b; font-size: 1.15rem;">0 đ</strong></div>
                     <small id="preview-giam-gia" style="display: block; color: #2e7d32; font-weight: 600; margin-top: 4px;"></small>
+                </div>
+
+                <!-- ====== NỘI DUNG THIỆP: các mục sẽ in lên thiệp ====== -->
+                <div class="ct-wrap" id="ct-wrap">
+                    <h3 class="ct-heading">Nội dung thiệp</h3>
+                    <p class="ct-sub">Điền thông tin sẽ in trên thiệp. Mục nào không cần, hãy tắt công tắc "Hiện".</p>
+
+                    <!-- 1. Thông tin cơ bản -->
+                    <section class="ct-sec" data-sec="coban">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>💗</span><span class="ct-name">Thông tin cơ bản</span></div>
+                        <div class="ct-body">
+                            <div class="ct-grid">
+                                <div><label class="lb" for="ct_re">Họ tên chú rể</label><input type="text" id="ct_re" class="form-input" placeholder="VD: Nguyễn Văn A"></div>
+                                <div><label class="lb" for="ct_dau">Họ tên cô dâu</label><input type="text" id="ct_dau" class="form-input" placeholder="VD: Trần Thị B"></div>
+                                <div><label class="lb" for="ct_dx_re">Danh xưng chú rể</label><input type="text" id="ct_dx_re" class="form-input" value="Trưởng Nam"></div>
+                                <div><label class="lb" for="ct_dx_dau">Danh xưng cô dâu</label><input type="text" id="ct_dx_dau" class="form-input" value="Út Nữ"></div>
+                            </div>
+                            <label class="lb" style="margin-top:16px;">Thứ tự hiển thị</label>
+                            <div class="seg">
+                                <label><input type="radio" name="ct_thu_tu" value="Nhà trai trước" checked><span>Nhà trai trước</span></label>
+                                <label><input type="radio" name="ct_thu_tu" value="Nhà gái trước"><span>Nhà gái trước</span></label>
+                            </div>
+                            <p class="ct-hint">Chọn bên nào được in trước trên thiệp.</p>
+                        </div>
+                    </section>
+
+                    <!-- 2. Ảnh đôi -->
+                    <section class="ct-sec collapsed" data-sec="anh">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>🖼️</span><span class="ct-name">Ảnh đôi</span>
+                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
+                        <div class="ct-body">
+                            <div class="ct-photos">
+                                <div><div>Ảnh chú rể</div><div class="ct-circle" id="pv_re">🖼</div>
+                                    <label class="ct-upbtn" for="ct_anh_re">Tải lên</label><input type="file" id="ct_anh_re" accept="image/*,.heic" hidden></div>
+                                <div><div>Ảnh cô dâu</div><div class="ct-circle" id="pv_dau">🖼</div>
+                                    <label class="ct-upbtn" for="ct_anh_dau">Tải lên</label><input type="file" id="ct_anh_dau" accept="image/*,.heic" hidden></div>
+                            </div>
+                            <p class="ct-hint" style="text-align:center;">JPG, PNG, GIF, WebP, HEIC · Ảnh chỉ dùng để xem trước, chưa được lưu cùng đơn hàng.</p>
+                        </div>
+                    </section>
+
+                    <!-- 3. Lời thông báo -->
+                    <section class="ct-sec collapsed" data-sec="thongbao">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>📢</span><span class="ct-name">Lời thông báo</span>
+                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
+                        <div class="ct-body">
+                            <label class="lb" for="ct_thongbao">Câu thông báo (để trống nếu không muốn hiện)</label>
+                            <textarea id="ct_thongbao" class="form-input" rows="3">TRÂN TRỌNG BÁO TIN
+LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
+                        </div>
+                    </section>
+
+                    <!-- 4. Thông tin gia đình -->
+                    <section class="ct-sec collapsed" data-sec="giadinh">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>👨‍👩‍👧</span><span class="ct-name">Thông tin gia đình</span>
+                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
+                        <div class="ct-body">
+                            <div class="ct-subt">Nhà trai</div>
+                            <label class="lb" for="ct_nt_dx">Danh xưng</label>
+                            <input type="text" id="ct_nt_dx" class="form-input" value="Ông Bà" style="margin-bottom:14px;">
+                            <div class="ct-grid" style="margin-bottom:14px;">
+                                <div><label class="lb" for="ct_nt_ong">Ông</label><input type="text" id="ct_nt_ong" class="form-input" placeholder="VD: Nguyễn Văn Hùng"></div>
+                                <div><label class="lb" for="ct_nt_ba">Bà</label><input type="text" id="ct_nt_ba" class="form-input" placeholder="VD: Trần Thị Lan"></div>
+                            </div>
+                            <label class="lb" for="ct_nt_dc">Địa chỉ nhà trai</label>
+                            <textarea id="ct_nt_dc" class="form-input" rows="2" placeholder="Địa chỉ nhà trai"></textarea>
+
+                            <hr class="ct-sep">
+
+                            <div class="ct-subt">Nhà gái</div>
+                            <label class="lb" for="ct_ng_dx">Danh xưng</label>
+                            <input type="text" id="ct_ng_dx" class="form-input" value="Ông Bà" style="margin-bottom:14px;">
+                            <div class="ct-grid" style="margin-bottom:14px;">
+                                <div><label class="lb" for="ct_ng_ong">Ông</label><input type="text" id="ct_ng_ong" class="form-input" placeholder="VD: Trần Văn Minh"></div>
+                                <div><label class="lb" for="ct_ng_ba">Bà</label><input type="text" id="ct_ng_ba" class="form-input" placeholder="VD: Phạm Thị Hoa"></div>
+                            </div>
+                            <label class="lb" for="ct_ng_dc">Địa chỉ nhà gái</label>
+                            <textarea id="ct_ng_dc" class="form-input" rows="2" placeholder="Địa chỉ nhà gái"></textarea>
+                        </div>
+                    </section>
+
+                    <!-- 5. Lễ -->
+                    <section class="ct-sec collapsed" data-sec="le">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>🕒</span><span class="ct-name">Lễ</span></div>
+                        <div class="ct-body">
+                            <label class="lb" for="ct_le_tieude">Tiêu đề mục</label>
+                            <input type="text" id="ct_le_tieude" class="form-input" value="THÔNG TIN LỄ CƯỚI">
+                            <p class="ct-hint">Tiêu đề in phía trên mục này trên thiệp. Để trống nếu bạn muốn bỏ hẳn.</p>
+                            <div class="ct-tip">💡 Bạn có tổ chức lễ vu quy/lễ thành hôn tại nhà không? Nếu có, hãy bấm nút bên dưới để thêm lễ!</div>
+                            <div id="ct_le_list"></div>
+                            <button type="button" class="ct-add" id="ct_le_add">+ Thêm lễ</button>
+                        </div>
+                    </section>
+
+                    <!-- 6. Tiệc cưới -->
+                    <section class="ct-sec collapsed" data-sec="tiec">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>🥂</span><span class="ct-name">Tiệc cưới</span>
+                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
+                        <div class="ct-body">
+                            <div class="seg" style="margin-bottom:16px;">
+                                <label><input type="radio" name="ct_loai_tiec" value="Tiệc cưới" checked><span>Tiệc cưới</span></label>
+                                <label><input type="radio" name="ct_loai_tiec" value="Tiệc báo hỷ"><span>Tiệc báo hỷ</span></label>
+                                <label><input type="radio" name="ct_loai_tiec" value="Tiệc đính hôn"><span>Tiệc đính hôn</span></label>
+                            </div>
+                            <label class="lb" for="ct_tiec_tieude">Tiêu đề mục</label>
+                            <input type="text" id="ct_tiec_tieude" class="form-input" value="THÔNG TIN TIỆC CƯỚI">
+                            <p class="ct-hint">Tiêu đề in phía trên mục này trên thiệp. Để trống nếu bạn muốn bỏ hẳn.</p>
+                            <div class="ct-grid" style="margin-top:14px;">
+                                <div><label class="lb" for="ct_tiec_ngay">Ngày tổ chức</label><input type="date" id="ct_tiec_ngay" class="form-input"></div>
+                                <div><label class="lb" for="ct_tiec_gio">Giờ tổ chức</label><input type="time" id="ct_tiec_gio" class="form-input"></div>
+                            </div>
+                            <p class="ct-hint">Giờ chính hiển thị lớn trên thiệp, dùng cho đếm ngược và thêm vào lịch.</p>
+                            <label class="lb" style="margin-top:14px;">Định dạng giờ</label>
+                            <div class="seg">
+                                <label><input type="radio" name="ct_tiec_fmt" value="24 giờ"><span>24 giờ</span></label>
+                                <label><input type="radio" name="ct_tiec_fmt" value="Sáng/Chiều" checked><span>Sáng/Chiều</span></label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 7. Lịch trình ngày cưới -->
+                    <section class="ct-sec collapsed" data-sec="lichtrinh">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>📋</span><span class="ct-name">Lịch trình ngày cưới</span>
+                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
+                        <div class="ct-body">
+                            <label class="lb" for="ct_lt_tieude">Tiêu đề</label>
+                            <input type="text" id="ct_lt_tieude" class="form-input" value="LỊCH TRÌNH NGÀY CƯỚI" style="margin-bottom:14px;">
+                            <div id="ct_lt_list"></div>
+                            <button type="button" class="ct-add" id="ct_lt_add">+ Thêm hoạt động</button>
+                        </div>
+                    </section>
+
+                    <!-- 8. Lời cảm ơn -->
+                    <section class="ct-sec collapsed" data-sec="camon">
+                        <div class="ct-head"><span class="ct-chev">▾</span><span>💬</span><span class="ct-name">Lời cảm ơn</span>
+                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
+                        <div class="ct-body">
+                            <label class="lb" for="ct_camon">Lời cảm ơn</label>
+                            <textarea id="ct_camon" class="form-input" rows="3">Sự hiện diện của quý khách là niềm vinh hạnh của gia đình chúng tôi!</textarea>
+                        </div>
+                    </section>
                 </div>
 
                 <div class="form-group">
@@ -262,6 +454,191 @@
         $('chon_mau_thiep').addEventListener('change', capNhatTamTinh);
         $('so_luong').addEventListener('input', capNhatTamTinh);
         $('form-dat-hang').addEventListener('reset', () => setTimeout(capNhatTamTinh, 0));
+    })();
+    </script>
+    <!-- JS cho các mục "Nội dung thiệp". Khi gửi đơn, toàn bộ nội dung được gom thành văn bản
+         và nối vào ô "Yêu cầu chỉnh sửa thêm" (yeu_cau_customize) để script.js gửi lên database như cũ. -->
+    <script>
+    (function () {
+        const $ = (id) => document.getElementById(id);
+        const val = (id) => ($(id) ? $(id).value : '').trim();
+        const radio = (name) => { const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ''; };
+        const form = $('form-dat-hang');
+        const secs = [].slice.call(document.querySelectorAll('.ct-sec'));
+        const isOn = (sec) => { const sw = sec.querySelector('.ct-switch input'); return !sw || sw.checked; };
+        const bat = (k) => isOn(document.querySelector('[data-sec="' + k + '"]'));
+
+        // ---- Thu gọn / mở rộng và công tắc "Hiện" ----
+        secs.forEach((sec) => {
+            sec.querySelector('.ct-head').addEventListener('click', (e) => {
+                if (e.target.closest('.ct-switch')) return;
+                sec.classList.toggle('collapsed');
+            });
+            const sw = sec.querySelector('.ct-switch input');
+            if (sw) sw.addEventListener('change', () => sec.classList.toggle('off', !sw.checked));
+        });
+
+
+        // ---- Tự điền ô "Họ và tên Cô Dâu & Chú Rể" phía trên (chỉ khi khách chưa tự gõ) ----
+        let lastAuto = '';
+        function dongBoTenKhach() {
+            const re = val('ct_re'), dau = val('ct_dau');
+            if (!re || !dau) return;
+            const auto = re + ' & ' + dau, o = $('ten_khach');
+            if (o.value === '' || o.value === lastAuto) { o.value = auto; lastAuto = auto; }
+        }
+        $('ct_re').addEventListener('input', dongBoTenKhach);
+        $('ct_dau').addEventListener('input', dongBoTenKhach);
+
+        // ---- Xem trước ảnh đôi (chỉ xem trước, không lưu) ----
+        function lienKetAnh(inputId, boxId) {
+            $(inputId).addEventListener('change', (e) => {
+                const f = e.target.files[0], box = $(boxId);
+                box.textContent = '🖼';
+                if (!f) return;
+                const img = new Image();
+                img.onerror = () => { box.textContent = '✔'; };
+                img.onload = () => { box.textContent = ''; box.appendChild(img); };
+                img.src = URL.createObjectURL(f);
+            });
+        }
+        lienKetAnh('ct_anh_re', 'pv_re');
+        lienKetAnh('ct_anh_dau', 'pv_dau');
+
+        // ---- Tiệc: đổi tab thì đổi tiêu đề mặc định ----
+        const tieuDeTiec = { 'Tiệc cưới': 'THÔNG TIN TIỆC CƯỚI', 'Tiệc báo hỷ': 'THÔNG TIN TIỆC BÁO HỶ', 'Tiệc đính hôn': 'THÔNG TIN TIỆC ĐÍNH HÔN' };
+        let tiecTruoc = 'Tiệc cưới';
+        [].forEach.call(document.querySelectorAll('input[name="ct_loai_tiec"]'), (r) => {
+            r.addEventListener('change', () => {
+                if (!r.checked) return;
+                const t = $('ct_tiec_tieude');
+                if (t.value === '' || t.value === tieuDeTiec[tiecTruoc]) t.value = tieuDeTiec[r.value];
+                tiecTruoc = r.value;
+            });
+        });
+
+        // ---- Danh sách thêm/xoá/đổi thứ tự (Lễ, Lịch trình) ----
+        function taoDanhSach(listId, addId, nhan, rowHtml, macDinh) {
+            const list = $(listId);
+            const danhSo = () => [].forEach.call(list.children, (r, i) => { r.querySelector('.ct-row-title').textContent = nhan + ' ' + (i + 1); });
+            function them(vals) {
+                const row = document.createElement('div');
+                row.className = 'ct-row';
+                row.innerHTML = '<div class="ct-row-head"><span class="ct-row-title"></span><span class="ct-row-tools">' +
+                    '<button type="button" data-a="up" title="Lên">▲</button><button type="button" data-a="down" title="Xuống">▼</button>' +
+                    '<button type="button" data-a="del" title="Xoá">🗑</button></span></div>' + rowHtml;
+                Object.keys(vals || {}).forEach((k) => { const f = row.querySelector('[data-f="' + k + '"]'); if (f) f.value = vals[k]; });
+                list.appendChild(row);
+                danhSo();
+            }
+            list.addEventListener('click', (e) => {
+                const b = e.target.closest('button[data-a]');
+                if (!b) return;
+                const row = b.closest('.ct-row'), a = b.dataset.a;
+                if (a === 'del') row.remove();
+                else if (a === 'up' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+                else if (a === 'down' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+                danhSo();
+            });
+            $(addId).addEventListener('click', () => them({}));
+            const khoiTao = () => { list.innerHTML = ''; macDinh.forEach(them); };
+            khoiTao();
+            return {
+                khoiTao: khoiTao,
+                hang: () => [].map.call(list.children, (row) => (k) => { const f = row.querySelector('[data-f="' + k + '"]'); return f ? f.value.trim() : ''; })
+            };
+        }
+        const dsLe = taoDanhSach('ct_le_list', 'ct_le_add', 'Lễ',
+            '<div class="ct-grid">' +
+            '<label class="lbw"><span>Tên lễ</span><input type="text" class="form-input" data-f="ten" placeholder="VD: Lễ Vu Quy"></label>' +
+            '<label class="lbw"><span>Địa điểm</span><input type="text" class="form-input" data-f="dd" placeholder="VD: Tư gia nhà gái"></label>' +
+            '<label class="lbw"><span>Ngày</span><input type="date" class="form-input" data-f="ngay"></label>' +
+            '<label class="lbw"><span>Giờ</span><input type="time" class="form-input" data-f="gio"></label></div>', []);
+        const dsLt = taoDanhSach('ct_lt_list', 'ct_lt_add', 'Hoạt động',
+            '<div class="ct-grid time">' +
+            '<label class="lbw"><span>Giờ</span><input type="time" class="form-input" data-f="gio"></label>' +
+            '<label class="lbw"><span>Nội dung</span><input type="text" class="form-input" data-f="nd" placeholder="VD: Đón khách"></label></div>',
+            [{ gio: '17:30', nd: 'Đón khách' }, { gio: '18:30', nd: 'Khai tiệc' }]);
+
+        // ---- Gom toàn bộ nội dung thiệp thành văn bản ----
+        const ngay = (v) => { if (!v) return ''; const p = v.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
+        const gio = (v, fmt) => {
+            if (!v) return '';
+            const p = v.split(':'), h = parseInt(p[0], 10), m = p[1];
+            if (fmt === '24 giờ') return String(h).padStart(2, '0') + ':' + m;
+            return (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'SA' : 'CH');
+        };
+
+        function tomTat() {
+            const fmt = radio('ct_tiec_fmt'), out = [];
+            const them = (tieu, lines) => { lines = lines.filter(Boolean); if (lines.length) out.push('[' + tieu + ']\n' + lines.join('\n')); };
+            const nguoi = (vai, ten, dx) => ten ? vai + ': ' + ten + (dx ? ' - ' + dx : '') : '';
+
+            const re = val('ct_re'), dau = val('ct_dau');
+            them('Thông tin cơ bản', [
+                nguoi('Chú rể', re, val('ct_dx_re')),
+                nguoi('Cô dâu', dau, val('ct_dx_dau')),
+                (re || dau) ? 'Thứ tự hiển thị: ' + radio('ct_thu_tu') : ''
+            ]);
+
+            if (bat('anh')) {
+                const a = $('ct_anh_re').files[0], b = $('ct_anh_dau').files[0];
+                them('Ảnh đôi', [a ? 'Ảnh chú rể: ' + a.name : '', b ? 'Ảnh cô dâu: ' + b.name : '']);
+            }
+            if (bat('thongbao')) them('Lời thông báo', [val('ct_thongbao').replace(/\s*\n\s*/g, ' / ')]);
+
+            if (bat('giadinh')) {
+                const nha = (ten, p) => {
+                    const o = val(p + '_ong'), b = val(p + '_ba'), dx = val(p + '_dx'), dc = val(p + '_dc');
+                    const ds = [dx && '(' + dx + ')', o && 'Ông ' + o, b && 'Bà ' + b].filter(Boolean).join(', ');
+                    return [(o || b) ? ten + ': ' + ds : '', dc ? 'Địa chỉ ' + ten.toLowerCase() + ': ' + dc : ''];
+                };
+                them('Thông tin gia đình', nha('Nhà trai', 'ct_nt').concat(nha('Nhà gái', 'ct_ng')));
+            }
+
+            const le = dsLe.hang().map((g) => [g('ten'), ngay(g('ngay')), gio(g('gio'), fmt), g('dd')].filter(Boolean).join(' | ')).filter(Boolean);
+            if (le.length) them('Lễ', [val('ct_le_tieude') ? 'Tiêu đề: ' + val('ct_le_tieude') : ''].concat(le));
+
+            if (bat('tiec')) {
+                them(radio('ct_loai_tiec') || 'Tiệc', [
+                    val('ct_tiec_tieude') ? 'Tiêu đề: ' + val('ct_tiec_tieude') : '',
+                    ngay(val('ct_tiec_ngay')) ? 'Ngày: ' + ngay(val('ct_tiec_ngay')) : '',
+                    gio(val('ct_tiec_gio'), fmt) ? 'Giờ: ' + gio(val('ct_tiec_gio'), fmt) : ''
+                ]);
+            }
+            if (bat('lichtrinh')) {
+                const hd = dsLt.hang().map((g) => [gio(g('gio'), fmt), g('nd')].filter(Boolean).join(' - ')).filter(Boolean);
+                if (hd.length) them('Lịch trình ngày cưới', [val('ct_lt_tieude') ? 'Tiêu đề: ' + val('ct_lt_tieude') : ''].concat(hd));
+            }
+            if (bat('camon')) them('Lời cảm ơn', [val('ct_camon')]);
+
+            return out.length ? '--- NỘI DUNG THIỆP ---\n' + out.join('\n\n') : '';
+        }
+
+        // ---- Nối vào yeu_cau_customize ngay trước khi script.js đọc form ----
+        // (listener ở document, pha capture, chạy trước listener của form; sau đó khôi phục ô ghi chú gốc)
+        let ghiChuGoc = null;
+        document.addEventListener('submit', (e) => {
+            if (e.target.id !== 'form-dat-hang') return;
+            const ta = $('yeu_cau_customize');
+            ghiChuGoc = ta.value;
+            const t = tomTat(), g = ghiChuGoc.trim();
+            ta.value = g && t ? g + '\n\n' + t : (g || t);
+        }, true);
+        document.addEventListener('submit', (e) => {
+            if (e.target.id !== 'form-dat-hang' || ghiChuGoc === null) return;
+            $('yeu_cau_customize').value = ghiChuGoc;
+            ghiChuGoc = null;
+        });
+
+        // ---- Sau khi form.reset() (script.js gọi khi đặt đơn thành công) ----
+        form.addEventListener('reset', () => setTimeout(() => {
+            lastAuto = '';
+            $('pv_re').textContent = '🖼'; $('pv_dau').textContent = '🖼';
+            dsLe.khoiTao(); dsLt.khoiTao();
+            tiecTruoc = 'Tiệc cưới';
+            secs.forEach((s) => s.classList.toggle('off', !isOn(s)));
+        }, 0));
     })();
     </script>
 </body>
