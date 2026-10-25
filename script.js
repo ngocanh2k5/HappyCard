@@ -4,14 +4,15 @@
 const SUPABASE_URL = 'https://dvetgpjcqcjamslvjiuf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_bCC1heNzUdnSNgHCNZcUhg_pI_XPRcg';
 
-// CẬP NHẬT QUAN TRỌNG: Gắn db vào 'window' để file HTML có thể sử dụng chung kết nối này cho chức năng Đăng nhập Admin
-window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Khai báo db chuẩn xác nhất để cả script.js và index.html đều dùng chung được
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.db = db; 
 
-// Biến toàn cục lưu danh sách gốc để phục vụ tính năng Lọc
+// Biến toàn cục 
 let tatCaMauThiep = [];
 let bieuDoThongKe = null;
 
-// Khởi chạy các hàm khi web vừa tải xong
+// Khởi chạy khi tải trang
 document.addEventListener('DOMContentLoaded', () => {
     taiDanhSachMauThiep();
     taiDanhSachDonHang();
@@ -19,17 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================================
-// 2. TẢI VÀ HIỂN THỊ MẪU THIỆP (TỪ BẢNG mau_thiep)
+// 2. TẢI VÀ HIỂN THỊ MẪU THIỆP 
 // =========================================================
 async function taiDanhSachMauThiep() {
-    const { data, error } = await window.db
-        .from('mau_thiep')
-        .select('*')
-        .order('ma_code', { ascending: true });
+    const { data, error } = await db.from('mau_thiep').select('*').order('ma_code', { ascending: true });
 
     if (error) {
         console.error("Lỗi lấy mẫu thiệp:", error);
-        document.getElementById('grid-mau-thiep').innerHTML = '<p style="color:red; text-align:center;">Lỗi kết nối cơ sở dữ liệu!</p>';
+        document.getElementById('grid-mau-thiep').innerHTML = '<p style="color:red; text-align:center;">Lỗi kết nối CSDL!</p>';
         return;
     }
 
@@ -48,7 +46,7 @@ async function taiDanhSachMauThiep() {
     veBieuDoChartJS(tatCaMauThiep);
 }
 
-// Hàm in thẻ HTML cho từng mẫu thiệp (Đã nâng cấp hỗ trợ Video)
+// Cập nhật hỗ trợ hiển thị cả ảnh và Video cho mẫu thiệp
 function renderTheThiep(danhSach) {
     const grid = document.getElementById('grid-mau-thiep');
     grid.innerHTML = ''; 
@@ -59,7 +57,6 @@ function renderTheThiep(danhSach) {
     }
 
     danhSach.forEach(thiep => {
-        // Kiểm tra xem link dữ liệu là video (.mp4, .webm) hay là ảnh tĩnh
         let phanTuHienThi = '';
         const link = thiep.hinh_anh.toLowerCase();
         
@@ -83,7 +80,6 @@ function renderTheThiep(danhSach) {
     });
 }
 
-// Lọc phong cách thiệp
 document.getElementById('filter-phong-cach').addEventListener('change', (e) => {
     const luaChon = e.target.value;
     if (luaChon === 'ALL') {
@@ -114,7 +110,7 @@ function xuLyFormDatHang() {
             yeu_cau_customize: document.getElementById('yeu_cau_customize').value.trim()
         };
 
-        const { error } = await window.db.from('don_dat_hang').insert([donHangMoi]);
+        const { error } = await db.from('don_dat_hang').insert([donHangMoi]);
 
         if (error) {
             alert('Có lỗi xảy ra: ' + error.message);
@@ -134,12 +130,7 @@ function xuLyFormDatHang() {
 // 4. HIỂN THỊ BẢNG ĐƠN HÀNG
 // =========================================================
 async function taiDanhSachDonHang() {
-    const { data, error } = await window.db
-        .from('don_dat_hang')
-        .select('*')
-        .order('id', { ascending: false })
-        .limit(7);
-
+    const { data, error } = await db.from('don_dat_hang').select('*').order('id', { ascending: false }).limit(7);
     const tbody = document.getElementById('tbody-don-hang');
     
     if (error) {
@@ -154,8 +145,7 @@ async function taiDanhSachDonHang() {
 
     tbody.innerHTML = '';
     data.forEach(don => {
-        // Cứ in nguyên bản dữ liệu ra. File HTML của bạn có một đoạn mã cực kỳ thông minh 
-        // tự động nhận diện và che giấu cột số điện thoại này nếu chưa đăng nhập.
+        // Cứ in nguyên bản. Code HTML của bạn sẽ tự động nhận diện và che SĐT.
         tbody.innerHTML += `
             <tr>
                 <td>#${don.id}</td>
@@ -171,22 +161,15 @@ async function taiDanhSachDonHang() {
 }
 
 // =========================================================
-// 5. VẼ BIỂU ĐỒ THỐNG KÊ (SỬ DỤNG CHART.JS)
+// 5. VẼ BIỂU ĐỒ 
 // =========================================================
 function veBieuDoChartJS(danhSach) {
     const ctx = document.getElementById('chart-luot-dat').getContext('2d');
-    
-    const top5 = [...danhSach]
-        .sort((a, b) => b.luot_dat_mua - a.luot_dat_mua)
-        .slice(0, 5);
-
+    const top5 = [...danhSach].sort((a, b) => b.luot_dat_mua - a.luot_dat_mua).slice(0, 5);
     const nhanBieuDo = top5.map(t => t.ma_code + ' - ' + t.ten_thiep);
     const duLieuBieuDo = top5.map(t => t.luot_dat_mua);
 
-    if (bieuDoThongKe) {
-        bieuDoThongKe.destroy();
-    }
-
+    if (bieuDoThongKe) bieuDoThongKe.destroy();
     bieuDoThongKe = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -200,14 +183,6 @@ function veBieuDoChartJS(danhSach) {
                 borderRadius: 4
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
     });
 }
