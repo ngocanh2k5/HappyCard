@@ -4,46 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chung Đôi - Thiệp Cưới Cao Cấp</title>
-    <!-- Font chữ (đã bỏ Segoe UI vì không thuộc Google Fonts) -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-    <!-- Nhúng file CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- Nhúng thư viện Supabase và Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- CSS bổ sung cho khung Xem trước mẫu (không cần sửa style.css) -->
+    <!-- CSS bổ sung (không cần sửa style.css) -->
     <style>
+        /* Xem trước mẫu thiệp */
         #grid-mau-thiep .card { cursor: pointer; transition: transform .2s, box-shadow .2s; }
         #grid-mau-thiep .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+        #grid-mau-thiep .card-img { object-fit: cover; object-position: top center; background: #faf3f5; }   /* ảnh thiệp dài: luôn hiện phần ĐẦU thiệp (ảnh cưới, tên cô dâu chú rể) thay vì cắt giữa */
         .hint-text { text-align: center; color: #888; font-size: .9rem; margin: -6px 0 16px; }
-
-        .preview-overlay {
-            display: none; position: fixed; inset: 0; z-index: 1000;
-            background: rgba(0,0,0,.65); align-items: center; justify-content: center; padding: 16px;
-        }
+        .preview-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.65); align-items: center; justify-content: center; padding: 16px; }
         .preview-overlay.open { display: flex; }
-        .preview-modal {
-            background: #fff; border-radius: 12px; max-width: 880px; width: 100%; max-height: 92vh;
-            overflow: hidden; display: flex; flex-wrap: wrap; position: relative;
-        }
-        .preview-modal .pv-img-wrap { flex: 1 1 380px; background: #faf3f5; display: flex; align-items: flex-start; justify-content: center; max-height: 92vh; overflow-y: auto; padding: 12px; box-sizing: border-box; }
-        .preview-modal .pv-img-wrap img { width: 100%; max-width: 480px; height: auto; display: block; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
-        .pv-scroll-hint { color: #888; font-size: .85rem; }
-        @media (max-width: 700px) { .preview-modal { overflow: auto; } .preview-modal .pv-img-wrap { max-height: 70vh; flex-basis: 100%; } }
-        .preview-modal .pv-info { flex: 1 1 280px; padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; max-height: 92vh; overflow-y: auto; box-sizing: border-box; }
+        .preview-modal, .od-modal { background: #fff; border-radius: 12px; width: 100%; max-height: 92vh; position: relative; }
+        .preview-modal { max-width: 880px; overflow: hidden; display: flex; flex-wrap: wrap; }
+        .pv-img-wrap { flex: 1 1 380px; background: #faf3f5; display: flex; align-items: flex-start; justify-content: center; max-height: 92vh; overflow-y: auto; padding: 12px; box-sizing: border-box; }
+        .pv-img-wrap img { width: 100%; max-width: 480px; height: auto; display: block; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+        .pv-info { flex: 1 1 280px; padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; max-height: 92vh; overflow-y: auto; box-sizing: border-box; }
         .pv-badge { align-self: flex-start; background: #fff0f3; color: #c2185b; padding: 4px 12px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
         .pv-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; margin: 0; color: #333; }
         .pv-price { font-size: 1.4rem; font-weight: 700; color: #c2185b; }
         .pv-sold { color: #666; }
+        .pv-scroll-hint { color: #888; font-size: .85rem; }
         .pv-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
         .pv-btn-order { background: #c2185b; color: #fff; border: 0; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; }
         .pv-btn-order:hover { background: #a01049; }
         .pv-btn-close { background: #eee; color: #333; border: 0; padding: 10px; border-radius: 6px; cursor: pointer; }
         .pv-x { position: absolute; top: 8px; right: 12px; font-size: 1.8rem; line-height: 1; background: none; border: 0; cursor: pointer; color: #555; z-index: 2; }
-    
-        /* ===== Nội dung thiệp (các mục thu gọn được) ===== */
-        .ct-wrap { margin: 8px 0 18px; }
+        @media (max-width: 700px) { .preview-modal { overflow: auto; } .pv-img-wrap { max-height: 70vh; flex-basis: 100%; } }
+
+        /* Nội dung thiệp (các mục thu gọn được) */
         .ct-heading { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0 0 4px; color: #333; }
         .ct-sub { color: #777; font-size: .9rem; margin: 0 0 12px; }
         .ct-sec { border: 1px solid #e3d6db; border-radius: 12px; background: #fbf8f9; margin-bottom: 12px; overflow: hidden; }
@@ -59,7 +51,6 @@
         .ct-switch i { width: 44px; height: 24px; border: 1px solid #c2185b; border-radius: 14px; position: relative; background: #fff; transition: .2s; }
         .ct-switch i::after { content: ''; position: absolute; top: 3px; left: 4px; width: 16px; height: 16px; border-radius: 50%; background: #bbb; transition: .2s; }
         .ct-switch input:checked + i::after { left: 23px; background: #c2185b; }
-
         .ct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
         .ct-grid.time { grid-template-columns: 140px 1fr; }
         .ct-body .lb, .ct-body .lbw > span { display: block; font-weight: 600; font-size: .9rem; margin: 0 0 6px; color: #222; }
@@ -69,22 +60,15 @@
         .ct-tip { background: #efe9eb; border-radius: 10px; padding: 12px 14px; color: #666; margin: 10px 0 12px; }
         .ct-sep { border: 0; border-top: 2px solid #e3d6db; margin: 18px 0; }
         .ct-subt { font-weight: 700; color: #888; margin: 6px 0 10px; }
-        .is-auto { background: #eee !important; color: #888; }
-        .ct-inputwrap { position: relative; }
-        .ct-reset { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: 0; background: none; cursor: pointer; color: #777; font-size: 1.1rem; }
-        .ct-reset[hidden] { display: none; }
-
         .seg { display: flex; background: #e8e3e5; border-radius: 12px; padding: 4px; gap: 4px; }
         .seg label { flex: 1; margin: 0; }
         .seg input { display: none; }
         .seg span { display: block; text-align: center; padding: 10px 6px; border-radius: 9px; color: #888; font-weight: 700; cursor: pointer; }
         .seg input:checked + span { background: #fff; color: #222; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
-
         .ct-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; text-align: center; }
         .ct-circle { width: 150px; height: 150px; margin: 8px auto 12px; border-radius: 50%; background: #e4e0e2; border: 2px solid #d0c9cc; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 2rem; color: #999; }
         .ct-circle img { width: 100%; height: 100%; object-fit: cover; }
         .ct-upbtn { display: inline-block; border: 1px solid #c2185b; color: #c2185b; font-weight: 700; padding: 8px 20px; border-radius: 8px; cursor: pointer; background: #fff; }
-
         .ct-row { border: 1px solid #e3d6db; background: #f3eef0; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
         .ct-row-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: #666; font-weight: 700; }
         .ct-row-tools button { border: 0; background: none; cursor: pointer; color: #666; font-size: .95rem; padding: 2px 6px; }
@@ -92,10 +76,11 @@
         .ct-row:first-child [data-a="up"], .ct-row:last-child [data-a="down"] { visibility: hidden; }
         .ct-add { border: 1px dashed #c2185b; color: #c2185b; background: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
         @media (max-width: 640px) { .ct-grid, .ct-photos { grid-template-columns: 1fr; } }
-        /* ===== Chi tiết đơn hàng (popup) ===== */
+
+        /* Chi tiết đơn hàng + đăng nhập quản trị (popup) */
         #tbody-don-hang tr { cursor: pointer; }
         #tbody-don-hang tr:hover td { background: #fff0f3; }
-        .od-modal { background: #fff; border-radius: 12px; max-width: 620px; width: 100%; max-height: 92vh; overflow: auto; position: relative; padding: 26px 26px 22px; }
+        .od-modal { max-width: 620px; overflow: auto; padding: 26px 26px 22px; }
         .od-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin: 0 0 14px; color: #333; }
         .od-list { display: grid; grid-template-columns: 150px 1fr; gap: 10px 14px; margin: 0; }
         .od-list dt { color: #888; font-weight: 600; }
@@ -108,7 +93,6 @@
 </head>
 <body>
 
-    <!-- Thanh Menu -->
     <nav class="navbar">
         <div class="logo">💍 Chung Đôi</div>
         <ul class="nav-links">
@@ -120,7 +104,6 @@
         </ul>
     </nav>
 
-    <!-- Banner Giới thiệu -->
     <header class="hero">
         <h1>Lưu Giữ Khoảnh Khắc Hạnh Phúc</h1>
         <p>Khám phá bộ sưu tập thiệp cưới sang trọng, hiện đại và tinh tế nhất dành riêng cho ngày trọng đại của bạn.</p>
@@ -130,7 +113,6 @@
         <!-- KHU VỰC 1: BỘ SƯU TẬP + XEM MẪU TRƯỚC -->
         <section id="bo-suu-tap" class="section-box">
             <h2 class="section-title">Bộ Sưu Tập Mẫu Thiệp</h2>
-
             <div class="filter-container">
                 <label for="filter-phong-cach">Lọc theo phong cách: </label>
                 <select id="filter-phong-cach" class="form-input filter-select">
@@ -145,7 +127,6 @@
                 </select>
             </div>
             <p class="hint-text">👆 Nhấn vào một mẫu thiệp để xem trước và chọn đặt in</p>
-
             <div id="grid-mau-thiep" class="grid-cards">
                 <p style="text-align: center; width: 100%; color: #888;">Đang tải danh sách mẫu thiệp từ hệ thống...</p>
             </div>
@@ -167,13 +148,10 @@
                         <input type="tel" id="so_dien_thoai" class="form-input" placeholder="VD: 0912345678" pattern="[0-9]{10,11}" title="Vui lòng nhập 10-11 chữ số" required>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label for="chon_mau_thiep">Chọn mẫu thiệp muốn in *</label>
-                        <select id="chon_mau_thiep" class="form-input" required>
-                            <option value="">-- Đang nạp danh sách mẫu --</option>
-                        </select>
+                        <select id="chon_mau_thiep" class="form-input" required><option value="">-- Đang nạp danh sách mẫu --</option></select>
                     </div>
                     <div class="form-group">
                         <label for="so_luong">Số lượng thiệp (Tối thiểu 50) *</label>
@@ -188,12 +166,11 @@
                     <small id="preview-giam-gia" style="display: block; color: #2e7d32; font-weight: 600; margin-top: 4px;"></small>
                 </div>
 
-                <!-- ====== NỘI DUNG THIỆP: các mục sẽ in lên thiệp ====== -->
-                <div class="ct-wrap" id="ct-wrap">
+                <!-- NỘI DUNG THIỆP: các mục sẽ in lên thiệp -->
+                <div style="margin: 8px 0 18px;">
                     <h3 class="ct-heading">Nội dung thiệp</h3>
                     <p class="ct-sub">Điền thông tin sẽ in trên thiệp. Mục nào không cần, hãy tắt công tắc "Hiện".</p>
 
-                    <!-- 1. Thông tin cơ bản -->
                     <section class="ct-sec" data-sec="coban">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>💗</span><span class="ct-name">Thông tin cơ bản</span></div>
                         <div class="ct-body">
@@ -212,7 +189,6 @@
                         </div>
                     </section>
 
-                    <!-- 2. Ảnh đôi -->
                     <section class="ct-sec collapsed" data-sec="anh">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>🖼️</span><span class="ct-name">Ảnh đôi</span>
                             <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
@@ -227,7 +203,6 @@
                         </div>
                     </section>
 
-                    <!-- 3. Lời thông báo -->
                     <section class="ct-sec collapsed" data-sec="thongbao">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>📢</span><span class="ct-name">Lời thông báo</span>
                             <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
@@ -238,7 +213,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                         </div>
                     </section>
 
-                    <!-- 4. Thông tin gia đình -->
                     <section class="ct-sec collapsed" data-sec="giadinh">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>👨‍👩‍👧</span><span class="ct-name">Thông tin gia đình</span>
                             <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
@@ -252,9 +226,7 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                             </div>
                             <label class="lb" for="ct_nt_dc">Địa chỉ nhà trai</label>
                             <textarea id="ct_nt_dc" class="form-input" rows="2" placeholder="Địa chỉ nhà trai"></textarea>
-
                             <hr class="ct-sep">
-
                             <div class="ct-subt">Nhà gái</div>
                             <label class="lb" for="ct_ng_dx">Danh xưng</label>
                             <input type="text" id="ct_ng_dx" class="form-input" value="Ông Bà" style="margin-bottom:14px;">
@@ -267,7 +239,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                         </div>
                     </section>
 
-                    <!-- 5. Lễ -->
                     <section class="ct-sec collapsed" data-sec="le">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>🕒</span><span class="ct-name">Lễ</span></div>
                         <div class="ct-body">
@@ -280,7 +251,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                         </div>
                     </section>
 
-                    <!-- 6. Tiệc cưới -->
                     <section class="ct-sec collapsed" data-sec="tiec">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>🥂</span><span class="ct-name">Tiệc cưới</span>
                             <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
@@ -306,7 +276,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                         </div>
                     </section>
 
-                    <!-- 7. Lịch trình ngày cưới -->
                     <section class="ct-sec collapsed" data-sec="lichtrinh">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>📋</span><span class="ct-name">Lịch trình ngày cưới</span>
                             <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
@@ -318,7 +287,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                         </div>
                     </section>
 
-                    <!-- 8. Lời cảm ơn -->
                     <section class="ct-sec collapsed" data-sec="camon">
                         <div class="ct-head"><span class="ct-chev">▾</span><span>💬</span><span class="ct-name">Lời cảm ơn</span>
                             <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
@@ -333,7 +301,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                     <label for="yeu_cau_customize">Yêu cầu chỉnh sửa thêm (Customize)</label>
                     <textarea id="yeu_cau_customize" class="form-input" rows="3" placeholder="VD: Đổi font chữ sang viền vàng kim, thêm mã QR Google Maps ở mặt sau..."></textarea>
                 </div>
-
                 <button type="submit" id="btn-submit" class="btn-primary">GỬI ĐƠN ĐẶT HÀNG</button>
             </form>
         </section>
@@ -345,15 +312,7 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             <div class="table-responsive">
                 <table class="data-table">
                     <thead>
-                        <tr>
-                            <th>Mã đơn</th>
-                            <th>Khách hàng</th>
-                            <th>SĐT</th>
-                            <th>Mã thiệp</th>
-                            <th>Số lượng</th>
-                            <th>Tổng tiền (VNĐ)</th>
-                            <th>Trạng thái</th>
-                        </tr>
+                        <tr><th>Mã đơn</th><th>Khách hàng</th><th>SĐT</th><th>Mã thiệp</th><th>Số lượng</th><th>Tổng tiền (VNĐ)</th><th>Trạng thái</th></tr>
                     </thead>
                     <tbody id="tbody-don-hang">
                         <tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu...</td></tr>
@@ -365,16 +324,14 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         <!-- KHU VỰC 4: BIỂU ĐỒ THỐNG KÊ -->
         <section id="thong-ke" class="section-box">
             <h2 class="section-title">Thống Kê Top 5 Mẫu Thiệp Bán Chạy Nhất</h2>
-            <div class="chart-wrapper" style="position: relative; height: 360px;">
-                <canvas id="chart-luot-dat"></canvas>
-            </div>
+            <div class="chart-wrapper" style="position: relative; height: 360px;"><canvas id="chart-luot-dat"></canvas></div>
         </section>
     </div>
 
-    <!-- KHUNG XEM TRƯỚC MẪU THIỆP (popup) -->
+    <!-- POPUP: xem trước mẫu thiệp -->
     <div id="preview-overlay" class="preview-overlay" aria-hidden="true">
         <div class="preview-modal" role="dialog" aria-modal="true" aria-labelledby="pv-title">
-            <button type="button" class="pv-x" id="pv-x" aria-label="Đóng">&times;</button>
+            <button type="button" class="pv-x" data-close aria-label="Đóng">&times;</button>
             <div class="pv-img-wrap"><img id="pv-img" src="" alt=""></div>
             <div class="pv-info">
                 <span class="pv-badge" id="pv-badge"></span>
@@ -384,16 +341,16 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                 <div class="pv-scroll-hint">↕ Cuộn ảnh bên trái để xem toàn bộ thiệp</div>
                 <div class="pv-actions">
                     <button type="button" class="pv-btn-order" id="pv-order">💍 Chọn mẫu này để đặt in</button>
-                    <button type="button" class="pv-btn-close" id="pv-close">Đóng</button>
+                    <button type="button" class="pv-btn-close" data-close>Đóng</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ĐĂNG NHẬP QUẢN TRỊ (popup) -->
+    <!-- POPUP: đăng nhập quản trị -->
     <div id="ad-overlay" class="preview-overlay" aria-hidden="true">
         <div class="od-modal" style="max-width:400px;" role="dialog" aria-modal="true" aria-labelledby="ad-title">
-            <button type="button" class="pv-x" id="ad-x" aria-label="Đóng">&times;</button>
+            <button type="button" class="pv-x" data-close aria-label="Đóng">&times;</button>
             <h3 class="od-title" id="ad-title">Đăng nhập quản trị</h3>
             <p class="ct-hint" style="margin:0 0 14px;">Chỉ quản trị viên mới xem được số điện thoại đầy đủ và nội dung thiệp của khách.</p>
             <form id="ad-form">
@@ -405,13 +362,13 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         </div>
     </div>
 
-    <!-- CHI TIẾT ĐƠN HÀNG (popup) -->
+    <!-- POPUP: chi tiết đơn hàng -->
     <div id="od-overlay" class="preview-overlay" aria-hidden="true">
         <div class="od-modal" role="dialog" aria-modal="true" aria-labelledby="od-title">
-            <button type="button" class="pv-x" id="od-x" aria-label="Đóng">&times;</button>
+            <button type="button" class="pv-x" data-close aria-label="Đóng">&times;</button>
             <h3 class="od-title" id="od-title">Chi tiết đơn hàng</h3>
             <div id="od-body"></div>
-            <div style="margin-top:18px;"><button type="button" class="pv-btn-close" id="od-close" style="width:100%;">Đóng</button></div>
+            <div style="margin-top:18px;"><button type="button" class="pv-btn-close" data-close style="width:100%;">Đóng</button></div>
         </div>
     </div>
 
@@ -419,392 +376,265 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         <p>© 2026 Cửa Hàng Thiệp Cưới Chung Đôi. Bài tập lớn môn Internet và các giao thức.</p>
     </footer>
 
-    <!-- Nhúng file JS chính (của bạn nhóm) -->
+    <!-- JS chính (của bạn nhóm) -->
     <script src="script.js"></script>
 
-    <!-- JS bổ sung cho phần HTML: xem trước mẫu + tạm tính tiền. Chạy sau script.js, không sửa script.js -->
+    <!-- JS bổ sung cho HTML, chạy sau script.js (không cần sửa script.js) -->
     <script>
-    (function () {
+    (() => {
         const $ = (id) => document.getElementById(id);
-        const overlay = $('preview-overlay');
-        let tenThiepDangXem = '';
+        const $$ = (s) => [...document.querySelectorAll(s)];
+        const val = (id) => $(id).value.trim();
+        const radio = (n) => ($$(`input[name="${n}"]:checked`)[0] || {}).value || '';
+        const mk = (tag, cls, txt) => { const e = document.createElement(tag); e.className = cls; e.textContent = txt || ''; return e; };
+        const dsMau = () => (typeof tatCaMauThiep !== 'undefined' ? tatCaMauThiep : []);   // biến của script.js
 
-        // ---------- 1. XEM TRƯỚC MẪU ----------
-        // Dùng event delegation vì thẻ .card được JS chính tạo động
-        $('grid-mau-thiep').addEventListener('click', (e) => {
+        // Popup dùng chung: đóng bằng nút [data-close], bấm ra ngoài hoặc phím Esc
+        function popup(id, onClose) {
+            const ov = $(id);
+            const open = () => { ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; };
+            const close = () => { ov.classList.remove('open'); ov.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; if (onClose) onClose(); };
+            ov.addEventListener('click', (e) => { if (e.target === ov || e.target.closest('[data-close]')) close(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov.classList.contains('open')) close(); });
+            return { open, close };
+        }
+
+        // ---------- 1. XEM TRƯỚC MẪU THIỆP ----------
+        const pv = popup('preview-overlay');
+        let tenThiep = '';
+        $('grid-mau-thiep').addEventListener('click', (e) => {      // thẻ .card do script.js tạo động
             const card = e.target.closest('.card');
             if (!card) return;
-            const q = (sel) => card.querySelector(sel);
-
-            const img = q('.card-img');
+            const txt = (s) => (card.querySelector(s) || {}).textContent || '';
+            const img = card.querySelector('.card-img');
             $('pv-img').src = img ? img.src : '';
             $('pv-img').alt = img ? img.alt : '';
             $('pv-img').parentElement.scrollTop = 0;
-            $('pv-badge').textContent = q('.card-badge') ? q('.card-badge').textContent : '';
-            tenThiepDangXem = q('.card-title') ? q('.card-title').textContent : '';
-            $('pv-title').textContent = tenThiepDangXem;
-            $('pv-price').textContent = q('.card-price') ? q('.card-price').textContent : '';
-            $('pv-sold').textContent = q('.card-orders') ? q('.card-orders').textContent : '';
-
-            overlay.classList.add('open');
-            overlay.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
+            tenThiep = txt('.card-title');
+            $('pv-badge').textContent = txt('.card-badge');
+            $('pv-title').textContent = tenThiep;
+            $('pv-price').textContent = txt('.card-price');
+            $('pv-sold').textContent = txt('.card-orders');
+            pv.open();
         });
-
-        function dongPreview() {
-            overlay.classList.remove('open');
-            overlay.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
-        }
-        $('pv-x').addEventListener('click', dongPreview);
-        $('pv-close').addEventListener('click', dongPreview);
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) dongPreview(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dongPreview(); });
-
-        // Nút "Chọn mẫu này": chọn sẵn mẫu trong form rồi cuộn xuống phần đặt hàng
-        $('pv-order').addEventListener('click', () => {
-            const select = $('chon_mau_thiep');
-            for (const opt of select.options) {
-                if (opt.value && opt.textContent.includes('] ' + tenThiepDangXem + ' -')) {
-                    select.value = opt.value;
-                    break;
-                }
-            }
-            dongPreview();
-            capNhatTamTinh();
+        $('pv-order').addEventListener('click', () => {             // chọn sẵn mẫu rồi cuộn xuống form
+            const opt = [...$('chon_mau_thiep').options].find((o) => o.value && o.textContent.includes('] ' + tenThiep + ' -'));
+            if (opt) $('chon_mau_thiep').value = opt.value;
+            pv.close();
+            tamTinh();
             $('dat-hang').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // ---------- 2. TẠM TÍNH TIỀN ----------
-        function capNhatTamTinh() {
-            const ma = $('chon_mau_thiep').value;
-            const soLuong = parseInt($('so_luong').value) || 0;
-            const ds = (typeof tatCaMauThiep !== 'undefined') ? tatCaMauThiep : [];
-            const thiep = ds.find((t) => t.ma_code === ma);
-            const donGia = thiep ? Number(thiep.gia_tien) : 0;
-
-            let tong = donGia * soLuong;
-            if (soLuong >= 500) {
-                tong *= 0.9;
-                $('preview-giam-gia').textContent = '🎉 Đã áp dụng giảm 10% (từ 500 thiệp)';
-            } else {
-                $('preview-giam-gia').textContent = '';
-            }
-            $('preview-don-gia').textContent = donGia.toLocaleString() + ' đ';
-            $('preview-tong-tien').textContent = Math.round(tong).toLocaleString() + ' đ';
+        // ---------- 2. TẠM TÍNH TIỀN (giảm 10% từ 500 thiệp) ----------
+        function tamTinh() {
+            const sl = parseInt($('so_luong').value) || 0;
+            const mau = dsMau().find((t) => t.ma_code === $('chon_mau_thiep').value);
+            const gia = mau ? Number(mau.gia_tien) : 0;
+            $('preview-giam-gia').textContent = sl >= 500 ? '🎉 Đã áp dụng giảm 10% (từ 500 thiệp)' : '';
+            $('preview-don-gia').textContent = gia.toLocaleString() + ' đ';
+            $('preview-tong-tien').textContent = Math.round(gia * sl * (sl >= 500 ? 0.9 : 1)).toLocaleString() + ' đ';
         }
+        $('chon_mau_thiep').addEventListener('change', tamTinh);
+        $('so_luong').addEventListener('input', tamTinh);
 
-        $('chon_mau_thiep').addEventListener('change', capNhatTamTinh);
-        $('so_luong').addEventListener('input', capNhatTamTinh);
-        $('form-dat-hang').addEventListener('reset', () => setTimeout(capNhatTamTinh, 0));
-    })();
-    </script>
-    <!-- JS cho các mục "Nội dung thiệp". Khi gửi đơn, toàn bộ nội dung được gom thành văn bản
-         và nối vào ô "Yêu cầu chỉnh sửa thêm" (yeu_cau_customize) để script.js gửi lên database như cũ. -->
-    <script>
-    (function () {
-        const $ = (id) => document.getElementById(id);
-        const val = (id) => ($(id) ? $(id).value : '').trim();
-        const radio = (name) => { const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ''; };
-        const form = $('form-dat-hang');
-        const secs = [].slice.call(document.querySelectorAll('.ct-sec'));
-        const isOn = (sec) => { const sw = sec.querySelector('.ct-switch input'); return !sw || sw.checked; };
-        const bat = (k) => isOn(document.querySelector('[data-sec="' + k + '"]'));
-
-        // ---- Thu gọn / mở rộng và công tắc "Hiện" ----
-        secs.forEach((sec) => {
-            sec.querySelector('.ct-head').addEventListener('click', (e) => {
-                if (e.target.closest('.ct-switch')) return;
-                sec.classList.toggle('collapsed');
-            });
+        // ---------- 3. NỘI DUNG THIỆP ----------
+        const bat = (k) => { const sw = document.querySelector(`[data-sec="${k}"] .ct-switch input`); return !sw || sw.checked; };
+        $$('.ct-sec').forEach((sec) => {                            // thu gọn/mở rộng + công tắc "Hiện"
             const sw = sec.querySelector('.ct-switch input');
+            sec.querySelector('.ct-head').addEventListener('click', (e) => { if (!e.target.closest('.ct-switch')) sec.classList.toggle('collapsed'); });
             if (sw) sw.addEventListener('change', () => sec.classList.toggle('off', !sw.checked));
         });
 
+        let lastAuto = '';                                          // tự điền "Họ và tên Cô Dâu & Chú Rể" nếu khách chưa gõ
+        const dongBoTen = () => {
+            const re = val('ct_re'), dau = val('ct_dau'), o = $('ten_khach');
+            if (re && dau && (o.value === '' || o.value === lastAuto)) o.value = lastAuto = re + ' & ' + dau;
+        };
+        $('ct_re').addEventListener('input', dongBoTen);
+        $('ct_dau').addEventListener('input', dongBoTen);
 
-        // ---- Tự điền ô "Họ và tên Cô Dâu & Chú Rể" phía trên (chỉ khi khách chưa tự gõ) ----
-        let lastAuto = '';
-        function dongBoTenKhach() {
-            const re = val('ct_re'), dau = val('ct_dau');
-            if (!re || !dau) return;
-            const auto = re + ' & ' + dau, o = $('ten_khach');
-            if (o.value === '' || o.value === lastAuto) { o.value = auto; lastAuto = auto; }
-        }
-        $('ct_re').addEventListener('input', dongBoTenKhach);
-        $('ct_dau').addEventListener('input', dongBoTenKhach);
+        [['ct_anh_re', 'pv_re'], ['ct_anh_dau', 'pv_dau']].forEach(([inp, boxId]) => $(inp).addEventListener('change', (e) => {   // xem trước ảnh đôi
+            const f = e.target.files[0], box = $(boxId), img = new Image();
+            box.textContent = '🖼';
+            if (!f) return;
+            img.onerror = () => { box.textContent = '✔'; };
+            img.onload = () => { box.textContent = ''; box.append(img); };
+            img.src = URL.createObjectURL(f);
+        }));
 
-        // ---- Xem trước ảnh đôi (chỉ xem trước, không lưu) ----
-        function lienKetAnh(inputId, boxId) {
-            $(inputId).addEventListener('change', (e) => {
-                const f = e.target.files[0], box = $(boxId);
-                box.textContent = '🖼';
-                if (!f) return;
-                const img = new Image();
-                img.onerror = () => { box.textContent = '✔'; };
-                img.onload = () => { box.textContent = ''; box.appendChild(img); };
-                img.src = URL.createObjectURL(f);
-            });
-        }
-        lienKetAnh('ct_anh_re', 'pv_re');
-        lienKetAnh('ct_anh_dau', 'pv_dau');
+        const TIEU_DE = { 'Tiệc cưới': 'THÔNG TIN TIỆC CƯỚI', 'Tiệc báo hỷ': 'THÔNG TIN TIỆC BÁO HỶ', 'Tiệc đính hôn': 'THÔNG TIN TIỆC ĐÍNH HÔN' };
+        let tiecTruoc = 'Tiệc cưới';                                // đổi loại tiệc thì đổi tiêu đề mặc định
+        $$('input[name="ct_loai_tiec"]').forEach((r) => r.addEventListener('change', () => {
+            if (!r.checked) return;
+            const t = $('ct_tiec_tieude');
+            if (t.value === '' || t.value === TIEU_DE[tiecTruoc]) t.value = TIEU_DE[r.value];
+            tiecTruoc = r.value;
+        }));
 
-        // ---- Tiệc: đổi tab thì đổi tiêu đề mặc định ----
-        const tieuDeTiec = { 'Tiệc cưới': 'THÔNG TIN TIỆC CƯỚI', 'Tiệc báo hỷ': 'THÔNG TIN TIỆC BÁO HỶ', 'Tiệc đính hôn': 'THÔNG TIN TIỆC ĐÍNH HÔN' };
-        let tiecTruoc = 'Tiệc cưới';
-        [].forEach.call(document.querySelectorAll('input[name="ct_loai_tiec"]'), (r) => {
-            r.addEventListener('change', () => {
-                if (!r.checked) return;
-                const t = $('ct_tiec_tieude');
-                if (t.value === '' || t.value === tieuDeTiec[tiecTruoc]) t.value = tieuDeTiec[r.value];
-                tiecTruoc = r.value;
-            });
-        });
-
-        // ---- Danh sách thêm/xoá/đổi thứ tự (Lễ, Lịch trình) ----
-        function taoDanhSach(listId, addId, nhan, rowHtml, macDinh) {
+        // Danh sách thêm/xoá/đổi thứ tự (Lễ, Lịch trình). fields: [tên, nhãn, kiểu input, placeholder]
+        function taoDS(listId, addId, nhan, gridCls, fields, macDinh) {
             const list = $(listId);
-            const danhSo = () => [].forEach.call(list.children, (r, i) => { r.querySelector('.ct-row-title').textContent = nhan + ' ' + (i + 1); });
-            function them(vals) {
-                const row = document.createElement('div');
-                row.className = 'ct-row';
-                row.innerHTML = '<div class="ct-row-head"><span class="ct-row-title"></span><span class="ct-row-tools">' +
-                    '<button type="button" data-a="up" title="Lên">▲</button><button type="button" data-a="down" title="Xuống">▼</button>' +
-                    '<button type="button" data-a="del" title="Xoá">🗑</button></span></div>' + rowHtml;
-                Object.keys(vals || {}).forEach((k) => { const f = row.querySelector('[data-f="' + k + '"]'); if (f) f.value = vals[k]; });
-                list.appendChild(row);
+            const head = '<div class="ct-row-head"><span class="ct-row-title"></span><span class="ct-row-tools">' +
+                '<button type="button" data-a="up" title="Lên">▲</button><button type="button" data-a="down" title="Xuống">▼</button>' +
+                '<button type="button" data-a="del" title="Xoá">🗑</button></span></div>';
+            const body = `<div class="ct-grid ${gridCls}">` + fields.map(([f, l, t, p]) =>
+                `<label class="lbw"><span>${l}</span><input type="${t}" class="form-input" data-f="${f}"${p ? ` placeholder="${p}"` : ''}></label>`).join('') + '</div>';
+            const danhSo = () => [...list.children].forEach((r, i) => { r.querySelector('.ct-row-title').textContent = nhan + ' ' + (i + 1); });
+            const them = (v = {}) => {
+                const r = mk('div', 'ct-row');
+                r.innerHTML = head + body;
+                Object.entries(v).forEach(([k, x]) => { r.querySelector(`[data-f="${k}"]`).value = x; });
+                list.append(r);
                 danhSo();
-            }
+            };
             list.addEventListener('click', (e) => {
                 const b = e.target.closest('button[data-a]');
                 if (!b) return;
-                const row = b.closest('.ct-row'), a = b.dataset.a;
-                if (a === 'del') row.remove();
-                else if (a === 'up' && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
-                else if (a === 'down' && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+                const r = b.closest('.ct-row'), a = b.dataset.a;
+                if (a === 'del') r.remove();
+                else if (a === 'up' && r.previousElementSibling) r.previousElementSibling.before(r);
+                else if (a === 'down' && r.nextElementSibling) r.nextElementSibling.after(r);
                 danhSo();
             });
-            $(addId).addEventListener('click', () => them({}));
-            const khoiTao = () => { list.innerHTML = ''; macDinh.forEach(them); };
+            $(addId).addEventListener('click', () => them());
+            const khoiTao = () => { list.innerHTML = ''; macDinh.forEach((v) => them(v)); };
             khoiTao();
-            return {
-                khoiTao: khoiTao,
-                hang: () => [].map.call(list.children, (row) => (k) => { const f = row.querySelector('[data-f="' + k + '"]'); return f ? f.value.trim() : ''; })
-            };
+            return { khoiTao, hang: () => [...list.children].map((r) => (k) => r.querySelector(`[data-f="${k}"]`).value.trim()) };
         }
-        const dsLe = taoDanhSach('ct_le_list', 'ct_le_add', 'Lễ',
-            '<div class="ct-grid">' +
-            '<label class="lbw"><span>Tên lễ</span><input type="text" class="form-input" data-f="ten" placeholder="VD: Lễ Vu Quy"></label>' +
-            '<label class="lbw"><span>Địa điểm</span><input type="text" class="form-input" data-f="dd" placeholder="VD: Tư gia nhà gái"></label>' +
-            '<label class="lbw"><span>Ngày</span><input type="date" class="form-input" data-f="ngay"></label>' +
-            '<label class="lbw"><span>Giờ</span><input type="time" class="form-input" data-f="gio"></label></div>', []);
-        const dsLt = taoDanhSach('ct_lt_list', 'ct_lt_add', 'Hoạt động',
-            '<div class="ct-grid time">' +
-            '<label class="lbw"><span>Giờ</span><input type="time" class="form-input" data-f="gio"></label>' +
-            '<label class="lbw"><span>Nội dung</span><input type="text" class="form-input" data-f="nd" placeholder="VD: Đón khách"></label></div>',
-            [{ gio: '17:30', nd: 'Đón khách' }, { gio: '18:30', nd: 'Khai tiệc' }]);
+        const dsLe = taoDS('ct_le_list', 'ct_le_add', 'Lễ', '', [['ten', 'Tên lễ', 'text', 'VD: Lễ Vu Quy'], ['dd', 'Địa điểm', 'text', 'VD: Tư gia nhà gái'], ['ngay', 'Ngày', 'date'], ['gio', 'Giờ', 'time']], []);
+        const dsLt = taoDS('ct_lt_list', 'ct_lt_add', 'Hoạt động', 'time', [['gio', 'Giờ', 'time'], ['nd', 'Nội dung', 'text', 'VD: Đón khách']], [{ gio: '17:30', nd: 'Đón khách' }, { gio: '18:30', nd: 'Khai tiệc' }]);
 
-        // ---- Gom toàn bộ nội dung thiệp thành văn bản ----
-        const ngay = (v) => { if (!v) return ''; const p = v.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
+        // Gom toàn bộ nội dung thiệp thành văn bản
+        const ngay = (v) => (v ? v.split('-').reverse().join('/') : '');
         const gio = (v, fmt) => {
             if (!v) return '';
-            const p = v.split(':'), h = parseInt(p[0], 10), m = p[1];
-            if (fmt === '24 giờ') return String(h).padStart(2, '0') + ':' + m;
-            return (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'SA' : 'CH');
+            const [h, m] = v.split(':'), hh = parseInt(h, 10);
+            return fmt === '24 giờ' ? String(hh).padStart(2, '0') + ':' + m : (hh % 12 || 12) + ':' + m + ' ' + (hh < 12 ? 'SA' : 'CH');
         };
-
         function tomTat() {
             const fmt = radio('ct_tiec_fmt'), out = [];
             const them = (tieu, lines) => { lines = lines.filter(Boolean); if (lines.length) out.push('[' + tieu + ']\n' + lines.join('\n')); };
-            const nguoi = (vai, ten, dx) => ten ? vai + ': ' + ten + (dx ? ' - ' + dx : '') : '';
+            const nguoi = (vai, ten, dx) => (ten ? vai + ': ' + ten + (dx ? ' - ' + dx : '') : '');
+            const tieuDe = (id) => (val(id) ? 'Tiêu đề: ' + val(id) : '');
 
             const re = val('ct_re'), dau = val('ct_dau');
-            them('Thông tin cơ bản', [
-                nguoi('Chú rể', re, val('ct_dx_re')),
-                nguoi('Cô dâu', dau, val('ct_dx_dau')),
-                (re || dau) ? 'Thứ tự hiển thị: ' + radio('ct_thu_tu') : ''
-            ]);
-
+            them('Thông tin cơ bản', [nguoi('Chú rể', re, val('ct_dx_re')), nguoi('Cô dâu', dau, val('ct_dx_dau')), re || dau ? 'Thứ tự hiển thị: ' + radio('ct_thu_tu') : '']);
             if (bat('anh')) {
                 const a = $('ct_anh_re').files[0], b = $('ct_anh_dau').files[0];
                 them('Ảnh đôi', [a ? 'Ảnh chú rể: ' + a.name : '', b ? 'Ảnh cô dâu: ' + b.name : '']);
             }
             if (bat('thongbao')) them('Lời thông báo', [val('ct_thongbao').replace(/\s*\n\s*/g, ' / ')]);
-
             if (bat('giadinh')) {
                 const nha = (ten, p) => {
                     const o = val(p + '_ong'), b = val(p + '_ba'), dx = val(p + '_dx'), dc = val(p + '_dc');
                     const ds = [dx && '(' + dx + ')', o && 'Ông ' + o, b && 'Bà ' + b].filter(Boolean).join(', ');
-                    return [(o || b) ? ten + ': ' + ds : '', dc ? 'Địa chỉ ' + ten.toLowerCase() + ': ' + dc : ''];
+                    return [o || b ? ten + ': ' + ds : '', dc ? 'Địa chỉ ' + ten.toLowerCase() + ': ' + dc : ''];
                 };
-                them('Thông tin gia đình', nha('Nhà trai', 'ct_nt').concat(nha('Nhà gái', 'ct_ng')));
+                them('Thông tin gia đình', [...nha('Nhà trai', 'ct_nt'), ...nha('Nhà gái', 'ct_ng')]);
             }
-
             const le = dsLe.hang().map((g) => [g('ten'), ngay(g('ngay')), gio(g('gio'), fmt), g('dd')].filter(Boolean).join(' | ')).filter(Boolean);
-            if (le.length) them('Lễ', [val('ct_le_tieude') ? 'Tiêu đề: ' + val('ct_le_tieude') : ''].concat(le));
-
+            if (le.length) them('Lễ', [tieuDe('ct_le_tieude'), ...le]);
             if (bat('tiec')) {
-                them(radio('ct_loai_tiec') || 'Tiệc', [
-                    val('ct_tiec_tieude') ? 'Tiêu đề: ' + val('ct_tiec_tieude') : '',
-                    ngay(val('ct_tiec_ngay')) ? 'Ngày: ' + ngay(val('ct_tiec_ngay')) : '',
-                    gio(val('ct_tiec_gio'), fmt) ? 'Giờ: ' + gio(val('ct_tiec_gio'), fmt) : ''
-                ]);
+                const n = ngay(val('ct_tiec_ngay')), g = gio(val('ct_tiec_gio'), fmt);
+                them(radio('ct_loai_tiec') || 'Tiệc', [tieuDe('ct_tiec_tieude'), n && 'Ngày: ' + n, g && 'Giờ: ' + g]);
             }
             if (bat('lichtrinh')) {
                 const hd = dsLt.hang().map((g) => [gio(g('gio'), fmt), g('nd')].filter(Boolean).join(' - ')).filter(Boolean);
-                if (hd.length) them('Lịch trình ngày cưới', [val('ct_lt_tieude') ? 'Tiêu đề: ' + val('ct_lt_tieude') : ''].concat(hd));
+                if (hd.length) them('Lịch trình ngày cưới', [tieuDe('ct_lt_tieude'), ...hd]);
             }
             if (bat('camon')) them('Lời cảm ơn', [val('ct_camon')]);
-
             return out.length ? '--- NỘI DUNG THIỆP ---\n' + out.join('\n\n') : '';
         }
 
-        // ---- Nối vào yeu_cau_customize ngay trước khi script.js đọc form ----
-        // (listener ở document, pha capture, chạy trước listener của form; sau đó khôi phục ô ghi chú gốc)
-        let ghiChuGoc = null;
+        // Ngay trước khi script.js đọc form: nối nội dung thiệp vào yeu_cau_customize rồi trả ô ghi chú về như cũ
         document.addEventListener('submit', (e) => {
             if (e.target.id !== 'form-dat-hang') return;
-            const ta = $('yeu_cau_customize');
-            ghiChuGoc = ta.value;
-            const t = tomTat(), g = ghiChuGoc.trim();
-            ta.value = g && t ? g + '\n\n' + t : (g || t);
+            const ta = $('yeu_cau_customize'), goc = ta.value, g = goc.trim(), t = tomTat();
+            ta.value = g && t ? g + '\n\n' + t : g || t;
+            setTimeout(() => { ta.value = goc; }, 0);
         }, true);
-        document.addEventListener('submit', (e) => {
-            if (e.target.id !== 'form-dat-hang' || ghiChuGoc === null) return;
-            $('yeu_cau_customize').value = ghiChuGoc;
-            ghiChuGoc = null;
-        });
 
-        // ---- Sau khi form.reset() (script.js gọi khi đặt đơn thành công) ----
-        form.addEventListener('reset', () => setTimeout(() => {
-            lastAuto = '';
-            $('pv_re').textContent = '🖼'; $('pv_dau').textContent = '🖼';
+        $('form-dat-hang').addEventListener('reset', () => setTimeout(() => {   // sau form.reset() của script.js
+            tamTinh();
+            lastAuto = ''; tiecTruoc = 'Tiệc cưới';
+            $('pv_re').textContent = $('pv_dau').textContent = '🖼';
             dsLe.khoiTao(); dsLt.khoiTao();
-            tiecTruoc = 'Tiệc cưới';
-            secs.forEach((s) => s.classList.toggle('off', !isOn(s)));
+            $$('.ct-sec').forEach((s) => { const sw = s.querySelector('.ct-switch input'); s.classList.toggle('off', !!sw && !sw.checked); });
         }, 0));
-    })();
-    </script>
-    <!-- JS: chế độ quản trị (Supabase Auth). Khách thường thấy SĐT bị che và không xem được nội dung thiệp -->
-    <script>
-    (function () {
-        const $ = (id) => document.getElementById(id);
-        const QT = window.QT = { isAdmin: false };
-        QT.maskPhone = (p) => { p = String(p == null ? '' : p); return p.length > 6 ? p.slice(0, 3) + '*'.repeat(p.length - 6) + p.slice(-3) : p; };
 
-        const toggle = $('admin-toggle'), ov = $('ad-overlay'), err = $('ad-err'), tb = $('tbody-don-hang');
-        const moPopup = () => { err.textContent = ''; ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; setTimeout(() => $('ad-email').focus(), 50); };
-        const dongPopup = () => { ov.classList.remove('open'); ov.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; };
-        $('ad-x').addEventListener('click', dongPopup);
-        ov.addEventListener('click', (e) => { if (e.target === ov) dongPopup(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov.classList.contains('open')) dongPopup(); });
-
-        // Che số điện thoại (cột thứ 3) mỗi khi bảng được vẽ lại
-        function apDungMask() {
-            if (QT.isAdmin) return;
-            [].forEach.call(tb.querySelectorAll('tr'), (tr) => {
-                const c = tr.cells[2];
-                if (c && /^\d{7,}$/.test(c.textContent.trim())) c.textContent = QT.maskPhone(c.textContent.trim());
-            });
-        }
-        new MutationObserver(apDungMask).observe(tb, { childList: true });
-
+        // ---------- 4. CHẾ ĐỘ QUẢN TRỊ (Supabase Auth) ----------
+        // Khách thường: SĐT bị che, không xem được nội dung thiệp. Quản trị viên (đã đăng nhập): xem đầy đủ.
+        const QT = { isAdmin: false, mask: (p) => { p = String(p == null ? '' : p); return p.length > 6 ? p.slice(0, 3) + '*'.repeat(p.length - 6) + p.slice(-3) : p; } };
+        const ad = popup('ad-overlay'), tb = $('tbody-don-hang'), toggle = $('admin-toggle');
         const taiLaiBang = () => { if (typeof taiDanhSachDonHang === 'function') taiDanhSachDonHang(); };
-        function capNhatUI() { toggle.textContent = QT.isAdmin ? '🔓 Đăng xuất' : '🔒 Quản trị'; }
+        const capNhatNut = () => { toggle.textContent = QT.isAdmin ? '🔓 Đăng xuất' : '🔒 Quản trị'; };
+
+        new MutationObserver(() => {                                // che cột SĐT mỗi khi bảng được vẽ lại
+            if (QT.isAdmin) return;
+            [...tb.rows].forEach((tr) => { const c = tr.cells[2], s = c && c.textContent.trim(); if (s && /^\d{7,}$/.test(s)) c.textContent = QT.mask(s); });
+        }).observe(tb, { childList: true });
 
         toggle.addEventListener('click', async (e) => {
             e.preventDefault();
-            if (!QT.isAdmin) { moPopup(); return; }
+            if (!QT.isAdmin) { $('ad-err').textContent = ''; ad.open(); setTimeout(() => $('ad-email').focus(), 50); return; }
             try { await db.auth.signOut(); } catch (x) {}
-            QT.isAdmin = false; capNhatUI(); taiLaiBang();
+            QT.isAdmin = false; capNhatNut(); taiLaiBang();
         });
-
         $('ad-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = $('ad-submit');
+            const btn = $('ad-submit'), err = $('ad-err');
             btn.disabled = true; err.textContent = '';
             try {
-                const { error } = await db.auth.signInWithPassword({ email: $('ad-email').value.trim(), password: $('ad-pass').value });
-                if (error) { err.textContent = 'Đăng nhập thất bại: ' + error.message; }
-                else { QT.isAdmin = true; $('ad-pass').value = ''; dongPopup(); capNhatUI(); taiLaiBang(); }
+                const { error } = await db.auth.signInWithPassword({ email: val('ad-email'), password: $('ad-pass').value });
+                if (error) err.textContent = 'Đăng nhập thất bại: ' + error.message;
+                else { QT.isAdmin = true; $('ad-pass').value = ''; ad.close(); capNhatNut(); taiLaiBang(); }
             } catch (x) { err.textContent = 'Không kết nối được hệ thống: ' + x.message; }
             btn.disabled = false;
         });
-
-        // Khôi phục phiên đăng nhập cũ (nếu có)
-        (async () => {
-            try {
-                const { data } = await db.auth.getSession();
-                if (data && data.session) { QT.isAdmin = true; capNhatUI(); taiLaiBang(); }
-            } catch (x) {}
+        (async () => {                                              // khôi phục phiên đăng nhập cũ
+            try { const { data } = await db.auth.getSession(); if (data && data.session) { QT.isAdmin = true; capNhatNut(); taiLaiBang(); } } catch (x) {}
         })();
-    })();
-    </script>
-    <!-- JS: bấm vào một dòng trong bảng đơn hàng để xem toàn bộ thông tin đơn -->
-    <script>
-    (function () {
-        const $ = (id) => document.getElementById(id);
-        const overlay = $('od-overlay'), body = $('od-body');
+
+        // ---------- 5. CHI TIẾT ĐƠN HÀNG (bấm vào một dòng trong bảng) ----------
         let token = 0;
-
-        const NHAN = {
-            id: 'Mã đơn', ten_khach_hang: 'Khách hàng', so_dien_thoai: 'Số điện thoại',
-            ma_code_thiep: 'Mẫu thiệp', so_luong_in: 'Số lượng in', tong_tien: 'Tổng tiền',
-            trang_thai: 'Trạng thái', created_at: 'Ngày đặt', ngay_dat: 'Ngày đặt', yeu_cau_customize: 'Yêu cầu / Nội dung thiệp'
-        };
-        const THU_TU = ['id', 'ten_khach_hang', 'so_dien_thoai', 'ma_code_thiep', 'so_luong_in', 'tong_tien', 'trang_thai', 'created_at', 'ngay_dat', 'yeu_cau_customize'];
-
-        function mo() { overlay.classList.add('open'); overlay.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
-        function dong() { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; token++; }
-        $('od-x').addEventListener('click', dong);
-        $('od-close').addEventListener('click', dong);
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) dong(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) dong(); });
-
-        function thongBao(text) { body.innerHTML = ''; const d = document.createElement('div'); d.className = 'od-msg'; d.textContent = text; body.appendChild(d); }
+        const od = popup('od-overlay', () => { token++; });
+        const NHAN = { id: 'Mã đơn', ten_khach_hang: 'Khách hàng', so_dien_thoai: 'Số điện thoại', ma_code_thiep: 'Mẫu thiệp', so_luong_in: 'Số lượng in', tong_tien: 'Tổng tiền', trang_thai: 'Trạng thái', created_at: 'Ngày đặt', ngay_dat: 'Ngày đặt', yeu_cau_customize: 'Yêu cầu / Nội dung thiệp' };
+        const THU_TU = Object.keys(NHAN);
+        const thongBao = (t) => { $('od-body').replaceChildren(mk('div', 'od-msg', t)); };
 
         function hienThi(don) {
-            body.innerHTML = '';
-            const admin = !!(window.QT && window.QT.isAdmin);
-            const dl = document.createElement('dl'); dl.className = 'od-list';
-            const them = (k, v) => {
-                if (v === null || v === undefined || v === '') return;
-                const dt = document.createElement('dt'); dt.textContent = NHAN[k] || k;
-                const dd = document.createElement('dd');
-                if (k === 'id') dd.textContent = '#' + v;
-                else if (k === 'tong_tien') { dd.className = 'od-money'; dd.textContent = parseInt(v).toLocaleString() + ' đ'; }
-                else if (k === 'so_luong_in') dd.textContent = Number(v).toLocaleString() + ' thiệp';
-                else if (k === 'created_at' || k === 'ngay_dat') { const t = new Date(v); dd.textContent = isNaN(t) ? String(v) : t.toLocaleString('vi-VN'); }
-                else if (k === 'ma_code_thiep') {
-                    const ds = (typeof tatCaMauThiep !== 'undefined') ? tatCaMauThiep : [];
-                    const m = ds.find((t) => t.ma_code === v);
-                    dd.textContent = m ? '[' + v + '] ' + m.ten_thiep + ' (' + m.phong_cach + ')' : String(v);
-                }
-                else if (k === 'so_dien_thoai') dd.textContent = admin ? String(v) : window.QT.maskPhone(v);
-                else if (k === 'yeu_cau_customize') { dd.className = 'od-note'; dd.textContent = String(v); }
-                else dd.textContent = String(v);
-                dl.appendChild(dt); dl.appendChild(dd);
+            const admin = QT.isAdmin, dl = mk('dl', 'od-list');
+            const ngayDat = (v) => { const t = new Date(v); return isNaN(t) ? String(v) : t.toLocaleString('vi-VN'); };
+            const fmt = {
+                id: (v) => '#' + v,
+                tong_tien: (v) => parseInt(v).toLocaleString() + ' đ',
+                so_luong_in: (v) => Number(v).toLocaleString() + ' thiệp',
+                created_at: ngayDat, ngay_dat: ngayDat,
+                ma_code_thiep: (v) => { const m = dsMau().find((t) => t.ma_code === v); return m ? `[${v}] ${m.ten_thiep} (${m.phong_cach})` : String(v); },
+                so_dien_thoai: (v) => (admin ? String(v) : QT.mask(v))
             };
-            THU_TU.forEach((k) => { if (!admin && k === 'yeu_cau_customize') return; them(k, don[k]); });
-            if (admin) Object.keys(don).forEach((k) => { if (THU_TU.indexOf(k) < 0) them(k, don[k]); });
-            if (!admin) { const dt = document.createElement('dt'); dt.textContent = NHAN.yeu_cau_customize; const dd = document.createElement('dd'); dd.textContent = '🔒 Chỉ quản trị viên mới xem được (đăng nhập ở mục Quản trị trên menu)'; dl.appendChild(dt); dl.appendChild(dd); }
-            else if (!don.yeu_cau_customize) { const dt = document.createElement('dt'); dt.textContent = NHAN.yeu_cau_customize; const dd = document.createElement('dd'); dd.textContent = 'Không có'; dl.appendChild(dt); dl.appendChild(dd); }
-            body.appendChild(dl);
+            const cls = { tong_tien: 'od-money', yeu_cau_customize: 'od-note' };
+            const them = (k, v) => dl.append(mk('dt', '', NHAN[k] || k), mk('dd', cls[k] || '', v));
+            const keys = admin ? [...THU_TU, ...Object.keys(don).filter((k) => !THU_TU.includes(k))] : THU_TU.filter((k) => k !== 'yeu_cau_customize');
+            keys.forEach((k) => { const v = don[k]; if (v != null && v !== '') them(k, (fmt[k] || String)(v)); });
+            if (!admin) them('yeu_cau_customize', '🔒 Chỉ quản trị viên mới xem được (đăng nhập ở mục Quản trị trên menu)');
+            else if (!don.yeu_cau_customize) them('yeu_cau_customize', 'Không có');
+            $('od-body').replaceChildren(dl);
         }
 
-        $('tbody-don-hang').addEventListener('click', async (e) => {
+        tb.addEventListener('click', async (e) => {
             const tr = e.target.closest('tr');
-            if (!tr || !tr.cells.length) return;
-            const m = /^#(\d+)$/.exec(tr.cells[0].textContent.trim());
+            const m = tr && tr.cells.length && /^#(\d+)$/.exec(tr.cells[0].textContent.trim());
             if (!m) return;
             const id = parseInt(m[1], 10), my = ++token;
             $('od-title').textContent = 'Chi tiết đơn hàng #' + id;
             thongBao('Đang tải thông tin đơn hàng...');
-            mo();
+            od.open();
             try {
                 const { data, error } = await db.from('don_dat_hang').select('*').eq('id', id).single();
                 if (my !== token) return;
-                if (error || !data) { thongBao('Không tải được đơn hàng' + (error ? ': ' + error.message : '.')); return; }
-                hienThi(data);
+                if (error || !data) thongBao('Không tải được đơn hàng' + (error ? ': ' + error.message : '.'));
+                else hienThi(data);
             } catch (err) {
                 if (my === token) thongBao('Không tải được đơn hàng: ' + err.message);
             }
