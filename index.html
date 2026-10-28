@@ -90,44 +90,75 @@
         .od-msg { text-align: center; color: #888; padding: 24px 0; }
         @media (max-width: 560px) { .od-list { grid-template-columns: 1fr; gap: 2px; } .od-list dd { margin-bottom: 10px; } }
 
-        /* ===== MÀN HÌNH BĂNG CHUYỀN (LANDING) ===== */
-        body.landing-on { overflow: hidden; }
+        /* ===== MÀN HÌNH BĂNG CHUYỀN (LANDING OVERLAY) ===== */
+        body.landing-on { overflow: auto; } /* Cho phép cuộn dọc trong màn hình landing */
         body.landing-on .navbar, body.landing-on .hero,
         body.landing-on .container, body.landing-on footer { display: none; }
-        .landing { display: none; position: fixed; inset: 0; z-index: 900; background: #ececee;
-            flex-direction: column; align-items: center; overflow: hidden; }
+        
+        .landing { display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; z-index: 900; background: #ececee; flex-direction: column; align-items: center; box-sizing: border-box; }
         body.landing-on .landing { display: flex; }
-        .lp-top { width: 100%; display: flex; justify-content: space-between; align-items: center;
-            padding: 14px 24px; box-sizing: border-box; }
+        
+        .lp-top { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; box-sizing: border-box; background: #ececee; position: sticky; top: 0; z-index: 10; }
         .lp-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #c2185b; font-weight: 600; }
-        #lp-skip { background: #fff; border: 1px solid #c2185b; color: #c2185b; font-weight: 700;
-            padding: 8px 16px; border-radius: 20px; cursor: pointer; }
+        #lp-skip { background: #fff; border: 1px solid #c2185b; color: #c2185b; font-weight: 700; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
         #lp-skip:hover { background: #c2185b; color: #fff; }
-        .lp-title { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.4vw, 1.7rem);
-            margin: 0 12px; color: #333; text-align: center; }
-        .cf-stage { position: relative; flex: 1; width: 100%; perspective: 1500px; margin: 8px 0;
-            touch-action: pan-y; user-select: none; }
-        .cf-item { --h: min(68vh, 720px); position: absolute; top: 50%; left: 50%;
-            height: var(--h); aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: #faf3f5;
-            box-shadow: 0 18px 40px rgba(0,0,0,.25); cursor: pointer;
-            transition: transform .55s cubic-bezier(.22,.8,.3,1), opacity .55s; will-change: transform; }
-        .cf-item img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
-            pointer-events: none; }
-        .cf-item.center::after { content: 'Nhấn để chọn mẫu này'; position: absolute; left: 50%; bottom: 14px;
-            transform: translateX(-50%); background: rgba(194,24,91,.92); color: #fff; font-weight: 700;
-            font-size: .85rem; padding: 7px 14px; border-radius: 18px; white-space: nowrap; }
+        
+        /* Giới thiệu trong màn hình Landing */
+        .lp-intro-box { text-align: center; max-width: 800px; margin: 10px auto 20px; padding: 0 20px; }
+        .lp-intro-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.5rem); color: #222; margin: 0 0 10px; font-weight: 700; }
+        .lp-intro-desc { font-size: 1.05rem; color: #555; line-height: 1.6; margin: 0; }
+
+        .lp-title { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.4vw, 1.5rem); margin: 10px 12px 0; color: #c2185b; text-align: center; }
+        
+        /* Băng chuyền 3D */
+        .cf-stage { position: relative; width: 100%; height: 500px; perspective: 1500px; margin: 10px 0; touch-action: pan-y; user-select: none; }
+        .cf-item { --h: min(60vh, 460px); position: absolute; top: 50%; left: 50%; height: var(--h); aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: #faf3f5; box-shadow: 0 18px 40px rgba(0,0,0,.25); cursor: pointer; transition: transform .55s cubic-bezier(.22,.8,.3,1), opacity .55s; will-change: transform; }
+        .cf-item img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; pointer-events: none; }
+        .cf-item.center::after { content: 'Nhấn để chọn mẫu này'; position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: rgba(194,24,91,.92); color: #fff; font-weight: 700; font-size: .85rem; padding: 7px 14px; border-radius: 18px; white-space: nowrap; }
         .cf-empty { text-align: center; color: #888; position: absolute; top: 50%; width: 100%; }
-        .cf-nav { position: absolute; top: 50%; z-index: 5; width: 54px; height: 54px; border-radius: 50%;
-            border: 0; background: #fff; font-size: 1.6rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+        .cf-nav { position: absolute; top: 50%; z-index: 5; width: 54px; height: 54px; border-radius: 50%; border: 0; background: #fff; font-size: 1.6rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
         .cf-nav:hover { background: #fff0f3; }
         .cf-prev { left: 16px; } .cf-next { right: 16px; }
         .cf-cap { margin: 0; color: #333; font-weight: 700; min-height: 1.3em; text-align: center; padding: 0 12px; }
-        .cf-dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px 16px 18px;
-            max-width: 90vw; }
-        .cf-dot { width: 12px; height: 12px; border-radius: 6px; border: 0; background: #c9c9cc; cursor: pointer;
-            padding: 0; transition: width .3s, background .3s; }
+        .cf-dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px 16px 18px; max-width: 90vw; }
+        .cf-dot { width: 12px; height: 12px; border-radius: 6px; border: 0; background: #c9c9cc; cursor: pointer; padding: 0; transition: width .3s, background .3s; }
         .cf-dot.active { width: 48px; background: #e91e63; }
         @media (max-width: 640px) { .cf-nav { width: 40px; height: 40px; font-size: 1.2rem; } .cf-prev { left: 6px; } .cf-next { right: 6px; } }
+
+        /* Đánh giá trong màn hình Landing */
+        .lp-testimonials { width: 100%; padding: 50px 20px; background-color: #f7f3f5; text-align: center; box-sizing: border-box; }
+        .sec-title-main { font-size: 2rem; font-weight: 800; color: #111; margin: 0 0 8px; font-family: 'Playfair Display', serif; }
+        .sec-title-main span { color: #c2185b; font-style: italic; }
+        .sec-subtitle { color: #666; font-size: 0.95rem; margin: 0 0 30px; }
+        .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .review-card { background: #fff; border-radius: 16px; padding: 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e8e3e5; display: flex; flex-direction: column; justify-content: space-between; }
+        .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .social-tag { display: inline-flex; align-items: center; gap: 6px; background: #f0f0f0; color: #333; font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+        .social-tag.facebook { background: #e7f0ff; color: #1877f2; }
+        .social-tag.google { background: #fce8e6; color: #ea4335; }
+        .review-date { font-size: 0.8rem; color: #888; }
+        .user-info-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .user-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .user-details h4 { margin: 0; font-size: 1rem; color: #222; font-weight: 700; }
+        .stars-rating { color: #ffb400; font-size: 0.9rem; margin-top: 2px; }
+        .review-content { font-size: 0.92rem; color: #444; line-height: 1.5; padding-left: 12px; border-left: 3px solid #c2185b; margin: 0; }
+
+        /* Châm ngôn / Cam kết trong màn hình Landing */
+        .lp-support { width: 100%; padding: 40px 20px 60px; background-color: #f7f3f5; text-align: center; box-sizing: border-box; }
+        .support-box { max-width: 800px; margin: 24px auto 0; background: #fff; border-radius: 20px; padding: 20px 30px; display: flex; align-items: center; justify-content: space-around; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e8e3e5; }
+        .support-item { display: flex; align-items: center; gap: 14px; text-align: left; }
+        .support-icon { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .icon-pink { background: #fff0f3; color: #c2185b; }
+        .icon-green { background: #e6f4ea; color: #137333; }
+        .support-text label { display: block; font-size: 0.82rem; color: #777; margin-bottom: 2px; }
+        .support-text strong { display: block; font-size: 1.1rem; color: #111; font-weight: 800; }
+        .support-divider { width: 1px; height: 38px; background: #e3d6db; }
+
+        @media (max-width: 650px) {
+            .support-box { flex-direction: column; gap: 16px; text-align: center; }
+            .support-item { flex-direction: column; text-align: center; }
+            .support-divider { width: 80%; height: 1px; }
+        }
 
         /* Hiệu ứng nhấn mạnh mẫu vừa chọn */
         .card.card-pick { animation: pickPulse 2.4s ease; }
@@ -140,13 +171,22 @@
 </head>
 <body class="landing-on">
 
-    <!-- MÀN HÌNH BĂNG CHUYỀN MẪU THIỆP -->
+    <!-- MÀN HÌNH BĂNG CHUYỀN OVERLAY MỜ ĐẦU (LANDING PAGE) -->
     <div id="landing" class="landing">
         <div class="lp-top">
             <span class="lp-logo">💍 Chung Đôi</span>
             <button type="button" id="lp-skip">Xem tất cả dạng lưới ›</button>
         </div>
-        <h1 class="lp-title">Chọn mẫu thiệp cưới bạn yêu thích</h1>
+
+        <!-- 1. THÊM ĐOẠN GIỚI THIỆU TRANG WEB -->
+        <div class="lp-intro-box">
+            <h1 class="lp-intro-title">Lưu Giữ Khoảnh Khắc Hạnh Phúc</h1>
+            <p class="lp-intro-desc">Nền tảng tạo thiệp cưới online hiện đại, tinh tế và sang trọng. Dễ dàng tạo mẫu, cá nhân hóa thông tin và gửi lời mời trang trọng nhất đến những người thân yêu.</p>
+        </div>
+
+        <h2 class="lp-title">Chọn mẫu thiệp cưới bạn yêu thích</h2>
+        
+        <!-- BĂNG CHUYỀN 3D CỦA BẠN -->
         <div class="cf-stage" id="cf-stage">
             <p class="cf-empty">Đang tải mẫu thiệp...</p>
         </div>
@@ -154,8 +194,90 @@
         <button type="button" class="cf-nav cf-next" id="cf-next" aria-label="Sau">›</button>
         <p class="cf-cap" id="cf-cap"></p>
         <div class="cf-dots" id="cf-dots"></div>
+
+        <!-- 2. THÊM ĐÁNH GIÁ TỪ KHÁCH HÀNG -->
+        <div class="lp-testimonials">
+            <h2 class="sec-title-main">Đánh giá từ <span>khách hàng</span></h2>
+            <p class="sec-subtitle">Những lời nhắn thật lòng từ các cặp đôi đã tin tưởng Chung Đôi cho ngày trọng đại.</p>
+
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div>
+                        <div class="review-header">
+                            <span class="social-tag facebook">👍 Facebook</span>
+                            <span class="review-date">Tháng 5/2026</span>
+                        </div>
+                        <div class="user-info-row">
+                            <img src="https://ui-avatars.com/api/?name=Thoại+Võ&background=c2185b&color=fff" alt="Thoại Võ" class="user-avatar">
+                            <div class="user-details">
+                                <h4>Thoại Võ</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-content">“Nhanh tiện đẹp thiệp giữ được lâu về sau này. Cảm ơn shop ạ”</p>
+                </div>
+
+                <div class="review-card">
+                    <div>
+                        <div class="review-header">
+                            <span class="social-tag google">🌐 Google</span>
+                            <span class="review-date">Tháng 9/2026</span>
+                        </div>
+                        <div class="user-info-row">
+                            <img src="https://ui-avatars.com/api/?name=Cheese&background=4285f4&color=fff" alt="Cheese" class="user-avatar">
+                            <div class="user-details">
+                                <h4>Cheese</h4>
+                                <div class="stars-rating">★★★★★</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-content">“Mẫu thiệp đa dạng, dễ sử dụng, có thể tạo song ngữ. Đội ngũ hỗ trợ rất nhiệt tình. Mình đã sử dụng dịch vụ và rất hài lòng.”</p>
+                </div>
+
+                <div class="review-card">
+                    <div>
+                        <div class="review-header">
+                            <span class="social-tag facebook">👍 Facebook</span>
+                            <span class="review-date">Tháng 5/2026</span>
+                        </div>
+                        <div class="user-info-row">
+                            <img src="https://ui-avatars.com/api/?name=Lý+Thư&background=c2185b&color=fff" alt="Lý Hoàng Gia Thư" class="user-avatar">
+                            <div class="user-details">
+                                <h4>Lý Hoàng Gia Thư</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-content">“Rất tốt và rất nhiệt tình đáng yêu”</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. THÊM CÂU CHÂM NGÔN & CAM KẾT HỖ TRỢ -->
+        <div class="lp-support">
+            <h2 class="sec-title-main">Khi bạn cần, <span>tụi mình luôn có mặt</span></h2>
+            <p class="sec-subtitle">Chung Đôi luôn sẵn sàng hỗ trợ 24/7. <strong style="color:#c2185b;">Nhắn tụi mình</strong> bất cứ khi nào bạn cần.</p>
+
+            <div class="support-box">
+                <div class="support-item">
+                    <div class="support-icon icon-pink">⚡</div>
+                    <div class="support-text">
+                        <label>Thời gian phản hồi</label>
+                        <strong>Dưới 1 phút</strong>
+                    </div>
+                </div>
+                <div class="support-divider"></div>
+                <div class="support-item">
+                    <div class="support-icon icon-green">✓</div>
+                    <div class="support-text">
+                        <label>Hỗ trợ chỉnh sửa</label>
+                        <strong>Đến khi bạn hài lòng</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- GIAO DIỆN CHÍNH (XUẤT HIỆN KHI NHẤN CHỌN MẪU THIỆP HOẶC NÚT SKIP) -->
     <nav class="navbar">
         <div class="logo">💍 Chung Đôi</div>
         <ul class="nav-links">
@@ -173,7 +295,7 @@
     </header>
 
     <div class="container">
-        <!-- KHU VỰC 1: BỘ SƯU TẬP + XEM MẪU TRƯỚC -->
+        <!-- KHU VỰC 1: BỘ SƯU TẬP DẠNG LƯỚI -->
         <section id="bo-suu-tap" class="section-box">
             <h2 class="section-title">Bộ Sưu Tập Mẫu Thiệp</h2>
             <div class="filter-container">
@@ -229,7 +351,7 @@
                     <small id="preview-giam-gia" style="display: block; color: #2e7d32; font-weight: 600; margin-top: 4px;"></small>
                 </div>
 
-                <!-- NỘI DUNG THIỆP: các mục sẽ in lên thiệp -->
+                <!-- NỘI DUNG THIỆP -->
                 <div style="margin: 8px 0 18px;">
                     <h3 class="ct-heading">Nội dung thiệp</h3>
                     <p class="ct-sub">Điền thông tin sẽ in trên thiệp. Mục nào không cần, hãy tắt công tắc "Hiện".</p>
@@ -435,8 +557,7 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         </div>
     </div>
 
-    <footer>
-    </footer>
+    <footer></footer>
 
     <!-- JS chính -->
     <script src="script.js"></script>
@@ -451,7 +572,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         const mk = (tag, cls, txt) => { const e = document.createElement(tag); e.className = cls; e.textContent = txt || ''; return e; };
         const dsMau = () => (typeof tatCaMauThiep !== 'undefined' ? tatCaMauThiep : []);
 
-        // Biến lưu chuỗi Base64 của ảnh cưới
         let base64AnhRe = '';
         let base64AnhDau = '';
 
@@ -462,7 +582,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             reader.readAsDataURL(file);
         }
 
-        // Popup dùng chung
         function popup(id, onClose) {
             const ov = $(id);
             const open = () => { ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; };
@@ -472,7 +591,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             return { open, close };
         }
 
-        // ---------- 1. XEM TRƯỚC MẪU THIỆP ----------
         const pv = popup('preview-overlay');
         let tenThiep = '';
         $('grid-mau-thiep').addEventListener('click', (e) => {
@@ -498,7 +616,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             $('dat-hang').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // ---------- 2. TẠM TÍNH TIỀN (giảm 10% từ 500 thiệp) ----------
         function tamTinh() {
             const sl = parseInt($('so_luong').value) || 0;
             const mau = dsMau().find((t) => t.ma_code === $('chon_mau_thiep').value);
@@ -510,7 +627,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         $('chon_mau_thiep').addEventListener('change', tamTinh);
         $('so_luong').addEventListener('input', tamTinh);
 
-        // ---------- 3. NỘI DUNG THIỆP & XỬ LÝ ẢNH ----------
         const bat = (k) => { const sw = document.querySelector(`[data-sec="${k}"] .ct-switch input`); return !sw || sw.checked; };
         $$('.ct-sec').forEach((sec) => {
             const sw = sec.querySelector('.ct-switch input');
@@ -526,7 +642,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         $('ct_re').addEventListener('input', dongBoTen);
         $('ct_dau').addEventListener('input', dongBoTen);
 
-        // Xử lý nạp ảnh và convert sang chuỗi base64
         $('ct_anh_re').addEventListener('change', (e) => {
             const f = e.target.files[0], box = $('pv_re');
             box.textContent = '🖼';
@@ -633,7 +748,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             return out.length ? '--- NỘI DUNG THIỆP ---\n' + out.join('\n\n') : '';
         }
 
-        // Tự động gộp nội dung thiệp vào ô yeu_cau_customize để gửi lên Supabase
         document.addEventListener('submit', (e) => {
             if (e.target.id !== 'form-dat-hang') return;
             const ta = $('yeu_cau_customize'), goc = ta.value, g = goc.trim(), t = tomTat();
@@ -651,7 +765,7 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             $$('.ct-sec').forEach((s) => { const sw = s.querySelector('.ct-switch input'); s.classList.toggle('off', !!sw && !sw.checked); });
         }, 0));
 
-        // ---------- 4. QUẢN TRỊ VIÊN (Supabase Auth) ----------
+        // Quản trị viên
         const QT = { isAdmin: false, mask: (p) => { p = String(p == null ? '' : p); return p.length > 6 ? p.slice(0, 3) + '*'.repeat(p.length - 6) + p.slice(-3) : p; } };
         const ad = popup('ad-overlay'), tb = $('tbody-don-hang'), toggle = $('admin-toggle');
         const taiLaiBang = () => { if (typeof taiDanhSachDonHang === 'function') taiDanhSachDonHang(); };
@@ -685,7 +799,7 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             try { const { data } = await db.auth.getSession(); if (data && data.session) { QT.isAdmin = true; capNhatNut(); taiLaiBang(); } } catch (x) {}
         })();
 
-        // ---------- 5. HIỂN THỊ CHI TIẾT ĐƠN HÀNG (Có bảo mật) ----------
+        // Chi tiết đơn hàng
         let token = 0;
         const od = popup('od-overlay', () => { token++; });
         const thongBao = (t) => { $('od-body').replaceChildren(mk('div', 'od-msg', t)); };
@@ -695,7 +809,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             const dl = mk('dl', 'od-list');
             const ngayDat = (v) => { const t = new Date(v); return isNaN(t) ? String(v) : t.toLocaleString('vi-VN'); };
 
-            // Thông tin cơ bản
             dl.append(mk('dt', '', 'Mã đơn'), mk('dd', '', '#' + don.id));
             dl.append(mk('dt', '', 'Khách hàng'), mk('dd', '', don.ten_khach_hang || ''));
             dl.append(mk('dt', '', 'Số điện thoại'), mk('dd', '', admin ? String(don.so_dien_thoai) : QT.mask(don.so_dien_thoai)));
@@ -707,16 +820,13 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             dl.append(mk('dt', '', 'Trạng thái'), mk('dd', '', don.trang_thai || 'Mới đặt'));
             if (don.created_at) dl.append(mk('dt', '', 'Ngày đặt'), mk('dd', '', ngayDat(don.created_at)));
 
-            // Kiểm tra phân quyền cho nội dung thiệp
             dl.append(mk('dt', '', 'Nội dung thiệp / Chi tiết'));
 
             if (!admin) {
-                // Người xem thông thường: Khóa bảo mật
                 const ddKhoa = mk('dd', 'od-note');
                 ddKhoa.innerHTML = '<span style="color:#c2185b;font-weight:600;">🔒 Thông tin riêng tư</span> — Chỉ Quản trị viên mới xem được thông tin in thiệp và ảnh cưới của khách. (Vui lòng bấm <b>Quản trị</b> ở thanh menu trên cùng để đăng nhập).';
                 dl.append(ddKhoa);
             } else {
-                // Quản trị viên: Tách và hiển thị ảnh cưới + toàn bộ chi tiết thiệp
                 let rawText = don.yeu_cau_customize || '';
                 let anhReSrc = '', anhDauSrc = '';
 
@@ -734,7 +844,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
 
                 const ddChiTiet = mk('dd', '');
 
-                // Hiển thị khối ảnh tròn nếu khách có tải ảnh
                 if (anhReSrc || anhDauSrc) {
                     const wrapAnh = mk('div', '');
                     wrapAnh.style.cssText = 'display:flex;gap:20px;margin-bottom:12px;background:#fdf7f9;padding:12px 16px;border-radius:8px;border:1px dashed #e3d6db;';
@@ -745,7 +854,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                     ddChiTiet.append(wrapAnh);
                 }
 
-                // Hiển thị nội dung chữ (Họ tên, ngày giờ, gia đình, lễ tiệc)
                 const wrapNote = mk('div', 'od-note');
                 wrapNote.textContent = rawText.trim() || 'Khách không điền thêm thông tin hoặc yêu cầu nào.';
                 ddChiTiet.append(wrapNote);
@@ -770,13 +878,13 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
                 if (error || !data) thongBao('Không tải được đơn hàng' + (error ? ': ' + error.message : '.'));
                 else hienThi(data);
             } catch (err) {
-                if (my === token) thongBao('Không tải được đơn hàng: ' + err.message);
+                if (my === token) thongBao('Không tải me được đơn hàng: ' + err.message);
             }
         });
     })();
     </script>
 
-    <!-- JS BĂNG CHUYỀN 3D (màn hình đầu tiên) -->
+    <!-- JS BĂNG CHUYỀN SCROLL CỦA BẠN (CƠ CHẾ CHUYỂN MÀN HÌNH CHUẨN GỐC) -->
     <script>
     (() => {
         const $ = (id) => document.getElementById(id);
@@ -811,9 +919,10 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             layout();
         }
 
+        /* HÀM CHUYỂN TỪ TRANG ĐẦU SANG GIAO DIỆN CHÍNH KHI BẤM MẪU */
         function enter(i) {
             const card = cards[i];
-            document.body.classList.remove('landing-on');
+            document.body.classList.remove('landing-on'); // Ẩn màn hình intro
             window.scrollTo(0, 0);
             if (!card) return;
             setTimeout(() => {
@@ -849,7 +958,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             layout();
         }
 
-        // Tự dựng lại băng chuyền mỗi khi script.js nạp/lọc danh sách mẫu
         let pending = false;
         new MutationObserver(() => {
             if (pending) return; pending = true;
@@ -861,7 +969,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
         $('cf-next').addEventListener('click', () => go(cur + 1));
         window.addEventListener('resize', layout);
 
-        // Phím mũi tên / Enter
         document.addEventListener('keydown', (e) => {
             if (!document.body.classList.contains('landing-on')) return;
             if (e.key === 'ArrowLeft') go(cur - 1);
@@ -869,7 +976,6 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             else if (e.key === 'Enter') enter(cur);
         });
 
-        // Vuốt / kéo chuột
         let sx = null;
         stage.addEventListener('pointerdown', (e) => { sx = e.clientX; moved = false; });
         window.addEventListener('pointerup', (e) => {
@@ -878,19 +984,18 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             if (Math.abs(dx) > 50) { moved = true; go(cur + (dx < 0 ? 1 : -1)); setTimeout(() => { moved = false; }, 50); }
         });
 
-        // Lăn chuột ngang
         stage.addEventListener('wheel', (e) => {
             if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 30) { e.preventDefault(); go(cur + (e.deltaX > 0 ? 1 : -1)); }
         }, { passive: false });
 
-        // Nút "Xem tất cả dạng lưới" -> sang giao diện chính
+        /* Nút "Xem tất cả dạng lưới" -> Sang giao diện chính */
         $('lp-skip').addEventListener('click', () => {
             document.body.classList.remove('landing-on');
             window.scrollTo(0, 0);
             setTimeout(() => $('bo-suu-tap').scrollIntoView({ behavior: 'smooth' }), 60);
         });
 
-        // Bấm logo trên thanh menu -> quay lại băng chuyền
+        /* Bấm logo ở Navbar -> Quay lại màn hình Intro trang đầu */
         document.querySelector('.navbar .logo').addEventListener('click', () => {
             document.body.classList.add('landing-on');
             window.scrollTo(0, 0);
