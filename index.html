@@ -89,9 +89,72 @@
         .od-note { white-space: pre-wrap; background: #faf5f7; border-left: 4px solid #c2185b; border-radius: 6px; padding: 12px 14px; margin-top: 4px; line-height: 1.55; }
         .od-msg { text-align: center; color: #888; padding: 24px 0; }
         @media (max-width: 560px) { .od-list { grid-template-columns: 1fr; gap: 2px; } .od-list dd { margin-bottom: 10px; } }
+
+        /* ===== MÀN HÌNH BĂNG CHUYỀN (LANDING) ===== */
+        body.landing-on { overflow: hidden; }
+        body.landing-on .navbar, body.landing-on .hero,
+        body.landing-on .container, body.landing-on footer { display: none; }
+        .landing { display: none; position: fixed; inset: 0; z-index: 900; background: #ececee;
+            flex-direction: column; align-items: center; overflow: hidden; }
+        body.landing-on .landing { display: flex; }
+        .lp-top { width: 100%; display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 24px; box-sizing: border-box; }
+        .lp-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #c2185b; font-weight: 600; }
+        #lp-skip { background: #fff; border: 1px solid #c2185b; color: #c2185b; font-weight: 700;
+            padding: 8px 16px; border-radius: 20px; cursor: pointer; }
+        #lp-skip:hover { background: #c2185b; color: #fff; }
+        .lp-title { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+            margin: 0 12px; color: #333; text-align: center; }
+        .cf-stage { position: relative; flex: 1; width: 100%; perspective: 1500px; margin: 8px 0;
+            touch-action: pan-y; user-select: none; }
+        .cf-item { --h: min(68vh, 720px); position: absolute; top: 50%; left: 50%;
+            height: var(--h); aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: #faf3f5;
+            box-shadow: 0 18px 40px rgba(0,0,0,.25); cursor: pointer;
+            transition: transform .55s cubic-bezier(.22,.8,.3,1), opacity .55s; will-change: transform; }
+        .cf-item img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
+            pointer-events: none; }
+        .cf-item.center::after { content: 'Nhấn để chọn mẫu này'; position: absolute; left: 50%; bottom: 14px;
+            transform: translateX(-50%); background: rgba(194,24,91,.92); color: #fff; font-weight: 700;
+            font-size: .85rem; padding: 7px 14px; border-radius: 18px; white-space: nowrap; }
+        .cf-empty { text-align: center; color: #888; position: absolute; top: 50%; width: 100%; }
+        .cf-nav { position: absolute; top: 50%; z-index: 5; width: 54px; height: 54px; border-radius: 50%;
+            border: 0; background: #fff; font-size: 1.6rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+        .cf-nav:hover { background: #fff0f3; }
+        .cf-prev { left: 16px; } .cf-next { right: 16px; }
+        .cf-cap { margin: 0; color: #333; font-weight: 700; min-height: 1.3em; text-align: center; padding: 0 12px; }
+        .cf-dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px 16px 18px;
+            max-width: 90vw; }
+        .cf-dot { width: 12px; height: 12px; border-radius: 6px; border: 0; background: #c9c9cc; cursor: pointer;
+            padding: 0; transition: width .3s, background .3s; }
+        .cf-dot.active { width: 48px; background: #e91e63; }
+        @media (max-width: 640px) { .cf-nav { width: 40px; height: 40px; font-size: 1.2rem; } .cf-prev { left: 6px; } .cf-next { right: 6px; } }
+
+        /* Hiệu ứng nhấn mạnh mẫu vừa chọn */
+        .card.card-pick { animation: pickPulse 2.4s ease; }
+        @keyframes pickPulse {
+            0%, 60% { box-shadow: 0 0 0 4px #e91e63, 0 0 30px rgba(233,30,99,.55); }
+            100% { box-shadow: 0 0 0 0 rgba(233,30,99,0); }
+        }
+        .logo { cursor: pointer; }
     </style>
 </head>
-<body>
+<body class="landing-on">
+
+    <!-- MÀN HÌNH BĂNG CHUYỀN MẪU THIỆP -->
+    <div id="landing" class="landing">
+        <div class="lp-top">
+            <span class="lp-logo">💍 Chung Đôi</span>
+            <button type="button" id="lp-skip">Xem tất cả dạng lưới ›</button>
+        </div>
+        <h1 class="lp-title">Chọn mẫu thiệp cưới bạn yêu thích</h1>
+        <div class="cf-stage" id="cf-stage">
+            <p class="cf-empty">Đang tải mẫu thiệp...</p>
+        </div>
+        <button type="button" class="cf-nav cf-prev" id="cf-prev" aria-label="Trước">‹</button>
+        <button type="button" class="cf-nav cf-next" id="cf-next" aria-label="Sau">›</button>
+        <p class="cf-cap" id="cf-cap"></p>
+        <div class="cf-dots" id="cf-dots"></div>
+    </div>
 
     <nav class="navbar">
         <div class="logo">💍 Chung Đôi</div>
@@ -710,6 +773,129 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
             } catch (err) {
                 if (my === token) thongBao('Không tải được đơn hàng: ' + err.message);
             }
+        });
+    })();
+    </script>
+
+    <!-- JS BĂNG CHUYỀN 3D (màn hình đầu tiên) -->
+    <script>
+    (() => {
+        const $ = (id) => document.getElementById(id);
+        const stage = $('cf-stage'), dots = $('cf-dots'), cap = $('cf-cap'), grid = $('grid-mau-thiep');
+        let items = [], dotEls = [], cards = [], cur = 0, moved = false;
+
+        function layout() {
+            if (!items.length) return;
+            const w = items[0].offsetWidth || 300;
+            items.forEach((it, i) => {
+                const d = i - cur, a = Math.abs(d), s = Math.sign(d);
+                const x = a === 0 ? 0 : s * (w * 0.72 + (a - 1) * w * 0.3);
+                const z = a === 0 ? 0 : -120 - a * 40;
+                const r = a === 0 ? 0 : -s * 38;
+                it.style.transform = `translate(-50%,-50%) translateX(${x}px) translateZ(${z}px) rotateY(${r}deg)`;
+                it.style.opacity = a > 5 ? 0 : Math.max(0.15, 1 - a * 0.17);
+                it.style.zIndex = 100 - a;
+                it.style.pointerEvents = a > 5 ? 'none' : 'auto';
+                it.classList.toggle('center', a === 0);
+            });
+            dotEls.forEach((d, i) => d.classList.toggle('active', i === cur));
+            const c = cards[cur];
+            if (c) {
+                const t = (s) => (c.querySelector(s) || {}).textContent || '';
+                cap.textContent = [t('.card-title'), t('.card-price')].filter(Boolean).join(' · ');
+            }
+        }
+
+        function go(i) {
+            if (!items.length) return;
+            cur = (i + items.length) % items.length;
+            layout();
+        }
+
+        function enter(i) {
+            const card = cards[i];
+            document.body.classList.remove('landing-on');
+            window.scrollTo(0, 0);
+            if (!card) return;
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                card.classList.remove('card-pick');
+                void card.offsetWidth;
+                card.classList.add('card-pick');
+                setTimeout(() => card.classList.remove('card-pick'), 2600);
+            }, 60);
+        }
+
+        function build() {
+            cards = [...grid.querySelectorAll('.card')];
+            stage.innerHTML = ''; dots.innerHTML = ''; items = []; dotEls = [];
+            if (!cards.length) { stage.innerHTML = '<p class="cf-empty">Đang tải mẫu thiệp...</p>'; cap.textContent = ''; return; }
+            if (cur >= cards.length) cur = 0;
+            cards.forEach((c, i) => {
+                const im = c.querySelector('.card-img');
+                const it = document.createElement('div');
+                it.className = 'cf-item';
+                const img = document.createElement('img');
+                img.src = im ? im.src : '';
+                img.alt = im ? im.alt : '';
+                img.draggable = false;
+                it.append(img);
+                it.addEventListener('click', () => { if (moved) return; i === cur ? enter(i) : go(i); });
+                stage.append(it); items.push(it);
+                const d = document.createElement('button');
+                d.type = 'button'; d.className = 'cf-dot'; d.setAttribute('aria-label', 'Mẫu ' + (i + 1));
+                d.addEventListener('click', () => go(i));
+                dots.append(d); dotEls.push(d);
+            });
+            layout();
+        }
+
+        // Tự dựng lại băng chuyền mỗi khi script.js nạp/lọc danh sách mẫu
+        let pending = false;
+        new MutationObserver(() => {
+            if (pending) return; pending = true;
+            requestAnimationFrame(() => { pending = false; build(); });
+        }).observe(grid, { childList: true });
+        build();
+
+        $('cf-prev').addEventListener('click', () => go(cur - 1));
+        $('cf-next').addEventListener('click', () => go(cur + 1));
+        window.addEventListener('resize', layout);
+
+        // Phím mũi tên / Enter
+        document.addEventListener('keydown', (e) => {
+            if (!document.body.classList.contains('landing-on')) return;
+            if (e.key === 'ArrowLeft') go(cur - 1);
+            else if (e.key === 'ArrowRight') go(cur + 1);
+            else if (e.key === 'Enter') enter(cur);
+        });
+
+        // Vuốt / kéo chuột
+        let sx = null;
+        stage.addEventListener('pointerdown', (e) => { sx = e.clientX; moved = false; });
+        window.addEventListener('pointerup', (e) => {
+            if (sx === null) return;
+            const dx = e.clientX - sx; sx = null;
+            if (Math.abs(dx) > 50) { moved = true; go(cur + (dx < 0 ? 1 : -1)); setTimeout(() => { moved = false; }, 50); }
+        });
+
+        // Lăn chuột ngang
+        stage.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 30) { e.preventDefault(); go(cur + (e.deltaX > 0 ? 1 : -1)); }
+        }, { passive: false });
+
+        // Nút "Xem tất cả dạng lưới" -> sang giao diện chính
+        $('lp-skip').addEventListener('click', () => {
+            document.body.classList.remove('landing-on');
+            window.scrollTo(0, 0);
+            setTimeout(() => $('bo-suu-tap').scrollIntoView({ behavior: 'smooth' }), 60);
+        });
+
+        // Bấm logo trên thanh menu -> quay lại băng chuyền
+        document.querySelector('.navbar .logo').addEventListener('click', () => {
+            document.body.classList.add('landing-on');
+            window.scrollTo(0, 0);
+            layout();
         });
     })();
     </script>
