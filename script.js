@@ -513,7 +513,7 @@ function veBieuDoChartJS(danhSach) {
 (() => {
     const LIEN_HE = {
         zalo: '0342783964',        
-        messenger: 'https://www.facebook.com/share/1AqXNvbvJj/',  
+        messenger: 'ten-fanpage',  
         dienThoai: '0342783964'    
     };
     
