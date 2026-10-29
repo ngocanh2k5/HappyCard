@@ -160,6 +160,60 @@
             .support-divider { width: 80%; height: 1px; }
         }
 
+        /* ===== MỚI: TẠI SAO CHỌN CHUNG ĐÔI ===== */
+        .lp-why { width: 100%; padding: 50px 20px 20px; background-color: #ececee; text-align: center; box-sizing: border-box; }
+        .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .why-card { background: #fff; border-radius: 16px; padding: 24px 22px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e8e3e5; transition: transform .2s, box-shadow .2s; }
+        .why-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(194,24,91,.14); }
+        .why-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 14px; }
+        .why-ic-pink { background: #fff0f3; }
+        .why-ic-gold { background: #fff6dc; }
+        .why-ic-green { background: #e6f4ea; }
+        .why-ic-blue { background: #e7f0ff; }
+        .why-ic-purple { background: #f3e8ff; }
+        .why-ic-red { background: #fde7ea; }
+        .why-card h3 { margin: 0 0 8px; font-size: 1.05rem; color: #111; font-weight: 800; }
+        .why-card p { margin: 0; font-size: .92rem; color: #666; line-height: 1.6; }
+
+        /* ===== MỚI: CÁCH THỰC HIỆN ===== */
+        .lp-steps { width: 100%; padding: 40px 20px 30px; background-color: #ececee; text-align: center; box-sizing: border-box; }
+        .steps-badge { display: inline-block; background: #fff0f3; color: #c2185b; font-size: .78rem; font-weight: 800; letter-spacing: .08em; padding: 6px 14px; border-radius: 20px; margin-bottom: 12px; }
+        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; max-width: 1100px; margin: 0 auto; position: relative; }
+        .step-card { position: relative; background: #fff; border: 1px solid #e8e3e5; border-radius: 16px; padding: 22px 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform .2s, box-shadow .2s; }
+        .step-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(194,24,91,.14); }
+        .step-num { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #e91e63, #c2185b); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; box-shadow: 0 4px 10px rgba(194,24,91,.35); }
+        .step-card h3 { margin: 0 0 6px; font-size: 1.02rem; color: #111; font-weight: 800; }
+        .step-card p { margin: 0; font-size: .9rem; color: #666; line-height: 1.55; }
+        @media (min-width: 900px) {
+            .step-card:not(:last-child)::after { content: '›'; position: absolute; right: -14px; top: 50%; transform: translateY(-50%); width: 10px; text-align: center; color: #c2185b; font-size: 1.6rem; font-weight: 700; z-index: 2; }
+        }
+        .cta-banner { max-width: 1100px; margin: 28px auto 0; border-radius: 22px; padding: 30px 34px; background: linear-gradient(120deg, #e91e63 0%, #c2185b 55%, #a01049 100%); display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; text-align: left; box-shadow: 0 14px 30px rgba(194,24,91,.3); position: relative; overflow: hidden; }
+        .cta-banner::after { content: ''; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,.1); pointer-events: none; }
+        .cta-text h3 { margin: 0 0 6px; color: #fff; font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.6vw, 1.6rem); }
+        .cta-text p { margin: 0; color: rgba(255,255,255,.9); font-size: .95rem; }
+        .cta-btns { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+        .cta-btn { border-radius: 30px; padding: 12px 24px; font-weight: 800; font-size: .88rem; cursor: pointer; transition: transform .15s, background .2s, color .2s; }
+        .cta-btn:hover { transform: translateY(-2px); }
+        .cta-btn.solid { background: #fff; color: #c2185b; border: 2px solid #fff; }
+        .cta-btn.ghost { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.7); }
+        .cta-btn.ghost:hover { background: rgba(255,255,255,.15); }
+        @media (max-width: 640px) { .cta-banner { padding: 24px 20px; } .cta-btns { width: 100%; } .cta-btn { flex: 1; } }
+
+        /* ===== MỚI: CÂU HỎI THƯỜNG GẶP ===== */
+        .lp-faq { width: 100%; padding: 40px 20px 50px; background-color: #f7f3f5; text-align: center; box-sizing: border-box; }
+        .faq-list { max-width: 800px; margin: 0 auto; text-align: left; display: flex; flex-direction: column; gap: 12px; }
+        .faq-item { background: #fff; border: 1px solid #e8e3e5; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); overflow: hidden; transition: border-color .2s, box-shadow .2s; }
+        .faq-item[open] { border-color: #c2185b; box-shadow: 0 6px 20px rgba(194,24,91,.12); }
+        .faq-item summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px 20px; font-weight: 700; color: #222; font-size: 1rem; user-select: none; }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::before { content: '?'; flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #fff0f3; color: #c2185b; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: .9rem; }
+        .faq-item summary::after { content: '+'; margin-left: auto; font-size: 1.5rem; line-height: 1; color: #c2185b; font-weight: 400; transition: transform .25s; }
+        .faq-item[open] summary::after { transform: rotate(45deg); }
+        .faq-item summary:hover { background: #fffafb; }
+        .faq-ans { padding: 0 20px 18px 60px; color: #555; font-size: .95rem; line-height: 1.65; }
+        .faq-ans b { color: #c2185b; }
+        @media (max-width: 560px) { .faq-ans { padding-left: 20px; } .lp-why .sec-title-main, .lp-faq .sec-title-main { font-size: 1.6rem; } }
+
         /* Hiệu ứng nhấn mạnh mẫu vừa chọn */
         .card.card-pick { animation: pickPulse 2.4s ease; }
         @keyframes pickPulse {
@@ -194,6 +248,86 @@
         <button type="button" class="cf-nav cf-next" id="cf-next" aria-label="Sau">›</button>
         <p class="cf-cap" id="cf-cap"></p>
         <div class="cf-dots" id="cf-dots"></div>
+
+        <!-- MỚI: TẠI SAO NÊN CHỌN CHUNG ĐÔI -->
+        <div class="lp-why">
+            <h2 class="sec-title-main">Tại sao nên chọn <span>Chung Đôi</span>?</h2>
+            <p class="sec-subtitle">Mọi thứ bạn cần để có tấm thiệp cưới hoàn hảo, từ chọn mẫu đến lúc nhận thiệp trên tay.</p>
+
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon why-ic-pink">💌</div>
+                    <h3>Kho mẫu thiệp đa dạng</h3>
+                    <p>Nhiều phong cách từ truyền thống, hiện đại, tối giản đến sang trọng và hoàng gia châu Âu. Lọc theo phong cách để chọn nhanh mẫu hợp với bạn.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon why-ic-purple">👀</div>
+                    <h3>Xem trước trước khi đặt</h3>
+                    <p>Nhấn vào từng mẫu để xem toàn bộ thiệp, giá tiền và số lượt đã đặt. Ưng ý là chọn đặt in ngay, không cần đoán mò.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon why-ic-gold">✍️</div>
+                    <h3>Cá nhân hóa nội dung</h3>
+                    <p>Điền tên cô dâu chú rể, thông tin hai họ, lễ, tiệc, lịch trình, lời cảm ơn và tải ảnh đôi. Mục nào không cần, chỉ việc tắt đi.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon why-ic-green">🎁</div>
+                    <h3>Giá rõ ràng, nhiều ưu đãi</h3>
+                    <p>Tổng tiền được tính ngay khi bạn chọn mẫu và số lượng. Đặt từ 500 thiệp trở lên được giảm 10%, không phát sinh chi phí ẩn.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon why-ic-blue">🛠️</div>
+                    <h3>Chỉnh sửa theo ý bạn</h3>
+                    <p>Muốn đổi font, thêm viền vàng kim hay mã QR bản đồ? Ghi yêu cầu riêng, đội ngũ sẽ chỉnh sửa cho đến khi bạn hài lòng.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon why-ic-red">💬</div>
+                    <h3>Hỗ trợ tận tâm 24/7</h3>
+                    <p>Đội ngũ luôn sẵn sàng giải đáp và phản hồi nhanh, đồng hành cùng bạn suốt quá trình thiết kế và in thiệp.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MỚI: CÁCH THỰC HIỆN -->
+        <div class="lp-steps">
+            <span class="steps-badge">CÁCH THỰC HIỆN</span>
+            <h2 class="sec-title-main">Đặt thiệp cưới chỉ với <span>4 bước</span></h2>
+            <p class="sec-subtitle">Quy trình đơn giản, bạn chỉ cần chọn mẫu và điền thông tin, phần còn lại cứ để Chung Đôi lo.</p>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <h3>Chọn mẫu thiệp</h3>
+                    <p>Lướt băng chuyền hoặc xem dạng lưới, lọc theo phong cách rồi chọn mẫu bạn ưng ý nhất.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <h3>Điền nội dung thiệp</h3>
+                    <p>Nhập tên cô dâu chú rể, thông tin hai họ, lễ, tiệc, lịch trình và tải ảnh đôi của bạn.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <h3>Gửi đơn đặt hàng</h3>
+                    <p>Chọn số lượng, xem tổng tiền tạm tính rồi gửi đơn. Nhớ ghi thêm yêu cầu chỉnh sửa nếu có.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <h3>Chỉnh sửa &amp; nhận thiệp</h3>
+                    <p>Đội ngũ liên hệ xác nhận, chỉnh sửa theo ý bạn đến khi hài lòng rồi tiến hành in thiệp.</p>
+                </div>
+            </div>
+
+            <div class="cta-banner">
+                <div class="cta-text">
+                    <h3>Bắt đầu chọn thiệp cưới ngay hôm nay!</h3>
+                    <p>Hàng loạt mẫu đẹp đang chờ bạn, đặt từ 500 thiệp được giảm ngay 10%.</p>
+                </div>
+                <div class="cta-btns">
+                    <button type="button" class="cta-btn solid" onclick="document.getElementById('lp-skip').click()">XEM TẤT CẢ MẪU</button>
+                    <button type="button" class="cta-btn ghost" onclick="document.getElementById('landing').scrollTo ? window.scrollTo({top:0,behavior:'smooth'}) : window.scrollTo(0,0)">CHỌN TRÊN BĂNG CHUYỀN ↑</button>
+                </div>
+            </div>
+        </div>
 
         <!-- 2. THÊM ĐÁNH GIÁ TỪ KHÁCH HÀNG -->
         <div class="lp-testimonials">
@@ -249,6 +383,43 @@
                     </div>
                     <p class="review-content">“Rất tốt và rất nhiệt tình đáng yêu”</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- MỚI: CÂU HỎI THƯỜNG GẶP -->
+        <div class="lp-faq">
+            <h2 class="sec-title-main">Câu hỏi <span>thường gặp</span></h2>
+            <p class="sec-subtitle">Những thắc mắc phổ biến của các cặp đôi trước khi đặt in thiệp cưới.</p>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Đặt in thiệp tối thiểu bao nhiêu cái?</summary>
+                    <div class="faq-ans">Số lượng tối thiểu là <b>50 thiệp</b>. Bạn có thể tăng theo bước 10 thiệp, và đặt từ <b>500 thiệp</b> trở lên sẽ được <b>giảm 10%</b> tổng đơn.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Làm sao để đặt in thiệp cưới?</summary>
+                    <div class="faq-ans">Chọn mẫu bạn thích, nhấn <b>"Chọn mẫu này để đặt in"</b>, điền thông tin liên hệ cùng nội dung thiệp rồi bấm <b>Gửi đơn đặt hàng</b>. Đội ngũ sẽ liên hệ qua số điện thoại bạn để xác nhận.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Tôi có thể chỉnh sửa nội dung và thiết kế theo ý mình không?</summary>
+                    <div class="faq-ans">Được. Bạn có thể điền đầy đủ thông tin hai họ, thời gian, địa điểm, lịch trình, lời cảm ơn và tải ảnh đôi. Ngoài ra, ô <b>"Yêu cầu chỉnh sửa thêm"</b> cho phép bạn đề xuất đổi font, màu sắc, thêm mã QR... Chúng tôi hỗ trợ chỉnh sửa <b>đến khi bạn hài lòng</b>.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Tôi có thể xem thử thiệp trước khi đặt không?</summary>
+                    <div class="faq-ans">Có. Nhấn vào bất kỳ mẫu nào để xem toàn bộ thiệp ở dạng phóng to, kèm đơn giá. Bạn cũng có thể xem tất cả mẫu ở dạng lưới và lọc theo phong cách.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Giá thiệp được tính như thế nào?</summary>
+                    <div class="faq-ans">Tổng tiền = <b>đơn giá mẫu × số lượng</b> (đã trừ 10% nếu đặt từ 500 thiệp). Bạn thấy số tiền tạm tính ngay trong form đặt hàng trước khi gửi đơn.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Thông tin và ảnh cưới của tôi có được bảo mật không?</summary>
+                    <div class="faq-ans">Có. Số điện thoại được ẩn một phần với người xem thông thường, còn nội dung thiệp và ảnh đôi chỉ <b>quản trị viên</b> mới xem được để phục vụ việc thiết kế và in ấn.</div>
+                </details>
+                <details class="faq-item">
+                    <summary>Cần hỗ trợ thêm thì liên hệ bằng cách nào?</summary>
+                    <div class="faq-ans">Bạn chỉ cần nhắn cho Chung Đôi bất cứ lúc nào, đội ngũ hỗ trợ <b>24/7</b> và phản hồi trong vòng dưới 1 phút.</div>
+                </details>
             </div>
         </div>
 
