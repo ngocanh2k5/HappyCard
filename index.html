@@ -5,243 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chung Đôi - Thiệp Cưới Cao Cấp</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+    <!-- CSS: style.css (người phụ trách CSS) rồi style-extra.css (CSS bổ sung) -->
     <link rel="stylesheet" href="style.css">
+   
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- CSS bổ sung -->
-    <style>
-        /* Xem trước mẫu thiệp */
-        #grid-mau-thiep .card { cursor: pointer; transition: transform .2s, box-shadow .2s; }
-        #grid-mau-thiep .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
-        #grid-mau-thiep .card-img { object-fit: cover; object-position: top center; background: #faf3f5; }
-        .hint-text { text-align: center; color: #888; font-size: .9rem; margin: -6px 0 16px; }
-        .preview-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.65); align-items: center; justify-content: center; padding: 16px; }
-        .preview-overlay.open { display: flex; }
-        .preview-modal, .od-modal { background: #fff; border-radius: 12px; width: 100%; max-height: 92vh; position: relative; }
-        .preview-modal { max-width: 880px; overflow: hidden; display: flex; flex-wrap: wrap; }
-        .pv-img-wrap { flex: 1 1 380px; background: #faf3f5; display: flex; align-items: flex-start; justify-content: center; max-height: 92vh; overflow-y: auto; padding: 12px; box-sizing: border-box; }
-        .pv-img-wrap img { width: 100%; max-width: 480px; height: auto; display: block; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
-        .pv-info { flex: 1 1 280px; padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; max-height: 92vh; overflow-y: auto; box-sizing: border-box; }
-        .pv-badge { align-self: flex-start; background: #fff0f3; color: #c2185b; padding: 4px 12px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
-        .pv-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; margin: 0; color: #333; }
-        .pv-price { font-size: 1.4rem; font-weight: 700; color: #c2185b; }
-        .pv-sold { color: #666; }
-        .pv-scroll-hint { color: #888; font-size: .85rem; }
-        .pv-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
-        .pv-btn-order { background: #c2185b; color: #fff; border: 0; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-        .pv-btn-order:hover { background: #a01049; }
-        .pv-btn-close { background: #eee; color: #333; border: 0; padding: 10px; border-radius: 6px; cursor: pointer; }
-        .pv-x { position: absolute; top: 8px; right: 12px; font-size: 1.8rem; line-height: 1; background: none; border: 0; cursor: pointer; color: #555; z-index: 2; }
-        @media (max-width: 700px) { .preview-modal { overflow: auto; } .pv-img-wrap { max-height: 70vh; flex-basis: 100%; } }
-
-        /* Nội dung thiệp (các mục thu gọn được) */
-        .ct-heading { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0 0 4px; color: #333; }
-        .ct-sub { color: #777; font-size: .9rem; margin: 0 0 12px; }
-        .ct-sec { border: 1px solid #e3d6db; border-radius: 12px; background: #fbf8f9; margin-bottom: 12px; overflow: hidden; }
-        .ct-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; user-select: none; }
-        .ct-chev { transition: transform .2s; color: #555; font-size: .9rem; }
-        .ct-sec.collapsed .ct-chev { transform: rotate(-90deg); }
-        .ct-name { font-weight: 700; color: #222; flex: 1; }
-        .ct-body { padding: 4px 16px 18px; }
-        .ct-sec.collapsed .ct-body { display: none; }
-        .ct-sec.off .ct-body { opacity: .45; pointer-events: none; }
-        .ct-switch { display: flex; align-items: center; gap: 8px; color: #888; font-size: .9rem; cursor: pointer; }
-        .ct-switch input { display: none; }
-        .ct-switch i { width: 44px; height: 24px; border: 1px solid #c2185b; border-radius: 14px; position: relative; background: #fff; transition: .2s; }
-        .ct-switch i::after { content: ''; position: absolute; top: 3px; left: 4px; width: 16px; height: 16px; border-radius: 50%; background: #bbb; transition: .2s; }
-        .ct-switch input:checked + i::after { left: 23px; background: #c2185b; }
-        .ct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
-        .ct-grid.time { grid-template-columns: 140px 1fr; }
-        .ct-body .lb, .ct-body .lbw > span { display: block; font-weight: 600; font-size: .9rem; margin: 0 0 6px; color: #222; }
-        .ct-body .lbw { display: block; }
-        .ct-body .form-input { width: 100%; box-sizing: border-box; }
-        .ct-hint { color: #888; font-size: .85rem; margin: 6px 0 0; }
-        .ct-tip { background: #efe9eb; border-radius: 10px; padding: 12px 14px; color: #666; margin: 10px 0 12px; }
-        .ct-sep { border: 0; border-top: 2px solid #e3d6db; margin: 18px 0; }
-        .ct-subt { font-weight: 700; color: #888; margin: 6px 0 10px; }
-        .seg { display: flex; background: #e8e3e5; border-radius: 12px; padding: 4px; gap: 4px; }
-        .seg label { flex: 1; margin: 0; }
-        .seg input { display: none; }
-        .seg span { display: block; text-align: center; padding: 10px 6px; border-radius: 9px; color: #888; font-weight: 700; cursor: pointer; }
-        .seg input:checked + span { background: #fff; color: #222; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
-        .ct-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; text-align: center; }
-        .ct-circle { width: 150px; height: 150px; margin: 8px auto 12px; border-radius: 50%; background: #e4e0e2; border: 2px solid #d0c9cc; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 2rem; color: #999; }
-        .ct-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .ct-upbtn { display: inline-block; border: 1px solid #c2185b; color: #c2185b; font-weight: 700; padding: 8px 20px; border-radius: 8px; cursor: pointer; background: #fff; }
-        .ct-row { border: 1px solid #e3d6db; background: #f3eef0; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
-        .ct-row-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: #666; font-weight: 700; }
-        .ct-row-tools button { border: 0; background: none; cursor: pointer; color: #666; font-size: .95rem; padding: 2px 6px; }
-        .ct-row-tools [data-a="del"] { color: #e57373; }
-        .ct-row:first-child [data-a="up"], .ct-row:last-child [data-a="down"] { visibility: hidden; }
-        .ct-add { border: 1px dashed #c2185b; color: #c2185b; background: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        @media (max-width: 640px) { .ct-grid, .ct-photos { grid-template-columns: 1fr; } }
-
-        /* Chi tiết đơn hàng + đăng nhập quản trị (popup) */
-        #tbody-don-hang tr { cursor: pointer; }
-        #tbody-don-hang tr:hover td { background: #fff0f3; }
-        .od-modal { max-width: 620px; overflow: auto; padding: 26px 26px 22px; }
-        .od-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin: 0 0 14px; color: #333; }
-        .od-list { display: grid; grid-template-columns: 150px 1fr; gap: 10px 14px; margin: 0; }
-        .od-list dt { color: #888; font-weight: 600; }
-        .od-list dd { margin: 0; color: #222; word-break: break-word; }
-        .od-list dd.od-money { color: #c2185b; font-weight: 700; font-size: 1.1rem; }
-        .od-note { white-space: pre-wrap; background: #faf5f7; border-left: 4px solid #c2185b; border-radius: 6px; padding: 12px 14px; margin-top: 4px; line-height: 1.55; }
-        .od-msg { text-align: center; color: #888; padding: 24px 0; }
-        @media (max-width: 560px) { .od-list { grid-template-columns: 1fr; gap: 2px; } .od-list dd { margin-bottom: 10px; } }
-
-        /* ===== MÀN HÌNH BĂNG CHUYỀN (LANDING OVERLAY) ===== */
-        body.landing-on { overflow: auto; } /* Cho phép cuộn dọc trong màn hình landing */
-        body.landing-on .navbar, body.landing-on .hero,
-        body.landing-on .container, body.landing-on footer { display: none; }
-
-        .landing { display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; z-index: 900; background: #ececee; flex-direction: column; align-items: center; box-sizing: border-box; }
-        body.landing-on .landing { display: flex; }
-
-        .lp-top { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; box-sizing: border-box; background: #ececee; position: sticky; top: 0; z-index: 10; }
-        .lp-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #c2185b; font-weight: 600; }
-        #lp-skip { background: #fff; border: 1px solid #c2185b; color: #c2185b; font-weight: 700; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
-        #lp-skip:hover { background: #c2185b; color: #fff; }
-
-        /* Giới thiệu trong màn hình Landing */
-        .lp-intro-box { text-align: center; max-width: 800px; margin: 10px auto 20px; padding: 0 20px; }
-        .lp-intro-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.5rem); color: #222; margin: 0 0 10px; font-weight: 700; }
-        .lp-intro-desc { font-size: 1.05rem; color: #555; line-height: 1.6; margin: 0; }
-
-        .lp-title { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.4vw, 1.5rem); margin: 10px 12px 0; color: #c2185b; text-align: center; }
-
-        /* Băng chuyền 3D */
-        .cf-stage { position: relative; width: 100%; height: 500px; perspective: 1500px; margin: 10px 0; touch-action: pan-y; user-select: none; }
-        .cf-item { --h: min(60vh, 460px); position: absolute; top: 50%; left: 50%; height: var(--h); aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: #faf3f5; box-shadow: 0 18px 40px rgba(0,0,0,.25); cursor: pointer; transition: transform .55s cubic-bezier(.22,.8,.3,1), opacity .55s; will-change: transform; }
-        .cf-item img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; pointer-events: none; }
-        .cf-item.center::after { content: 'Nhấn để chọn mẫu này'; position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: rgba(194,24,91,.92); color: #fff; font-weight: 700; font-size: .85rem; padding: 7px 14px; border-radius: 18px; white-space: nowrap; }
-        .cf-empty { text-align: center; color: #888; position: absolute; top: 50%; width: 100%; }
-        .cf-wrap { position: relative; width: 100%; }
-        .cf-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; width: 54px; height: 54px; border-radius: 50%; border: 0; background: #fff; font-size: 1.6rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
-        .cf-nav:hover { background: #fff0f3; }
-        .cf-prev { left: 16px; } .cf-next { right: 16px; }
-        .cf-cap { margin: 0; color: #333; font-weight: 700; min-height: 1.3em; text-align: center; padding: 0 12px; }
-        .cf-dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px 16px 18px; max-width: 90vw; }
-        .cf-dot { width: 12px; height: 12px; border-radius: 6px; border: 0; background: #c9c9cc; cursor: pointer; padding: 0; transition: width .3s, background .3s; }
-        .cf-dot.active { width: 48px; background: #e91e63; }
-        @media (max-width: 640px) { .cf-nav { width: 40px; height: 40px; font-size: 1.2rem; } .cf-prev { left: 6px; } .cf-next { right: 6px; } }
-
-        /* Đánh giá trong màn hình Landing */
-        .lp-testimonials { width: 100%; padding: 50px 20px; background-color: #f7f3f5; text-align: center; box-sizing: border-box; }
-        .sec-title-main { font-size: 2rem; font-weight: 800; color: #111; margin: 0 0 8px; font-family: 'Playfair Display', serif; }
-        .sec-title-main span { color: #c2185b; font-style: italic; }
-        .sec-subtitle { color: #666; font-size: 0.95rem; margin: 0 0 30px; }
-        .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
-        .review-card { background: #fff; border-radius: 16px; padding: 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e8e3e5; display: flex; flex-direction: column; justify-content: space-between; }
-        .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-        .social-tag { display: inline-flex; align-items: center; gap: 6px; background: #f0f0f0; color: #333; font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
-        .social-tag.facebook { background: #e7f0ff; color: #1877f2; }
-        .social-tag.google { background: #fce8e6; color: #ea4335; }
-        .review-date { font-size: 0.8rem; color: #888; }
-        .user-info-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .user-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
-        .user-details h4 { margin: 0; font-size: 1rem; color: #222; font-weight: 700; }
-        .stars-rating { color: #ffb400; font-size: 0.9rem; margin-top: 2px; }
-        .review-content { font-size: 0.92rem; color: #444; line-height: 1.5; padding-left: 12px; border-left: 3px solid #c2185b; margin: 0; }
-
-        /* Châm ngôn / Cam kết trong màn hình Landing */
-        .lp-support { width: 100%; padding: 40px 20px 60px; background-color: #f7f3f5; text-align: center; box-sizing: border-box; }
-        .support-box { max-width: 800px; margin: 24px auto 0; background: #fff; border-radius: 20px; padding: 20px 30px; display: flex; align-items: center; justify-content: space-around; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e8e3e5; }
-        .support-item { display: flex; align-items: center; gap: 14px; text-align: left; }
-        .support-icon { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        .icon-pink { background: #fff0f3; color: #c2185b; }
-        .icon-green { background: #e6f4ea; color: #137333; }
-        .support-text label { display: block; font-size: 0.82rem; color: #777; margin-bottom: 2px; }
-        .support-text strong { display: block; font-size: 1.1rem; color: #111; font-weight: 800; }
-        .support-divider { width: 1px; height: 38px; background: #e3d6db; }
-
-        @media (max-width: 650px) {
-            .support-box { flex-direction: column; gap: 16px; text-align: center; }
-            .support-item { flex-direction: column; text-align: center; }
-            .support-divider { width: 80%; height: 1px; }
-        }
-
-        /* ===== MỚI: TẠI SAO CHỌN CHUNG ĐÔI ===== */
-        .lp-why { width: 100%; padding: 50px 20px 20px; background-color: #ececee; text-align: center; box-sizing: border-box; }
-        .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
-        .why-card { background: #fff; border-radius: 16px; padding: 24px 22px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e8e3e5; transition: transform .2s, box-shadow .2s; }
-        .why-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(194,24,91,.14); }
-        .why-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 14px; }
-        .why-ic-pink { background: #fff0f3; }
-        .why-ic-gold { background: #fff6dc; }
-        .why-ic-green { background: #e6f4ea; }
-        .why-ic-blue { background: #e7f0ff; }
-        .why-ic-purple { background: #f3e8ff; }
-        .why-ic-red { background: #fde7ea; }
-        .why-card h3 { margin: 0 0 8px; font-size: 1.05rem; color: #111; font-weight: 800; }
-        .why-card p { margin: 0; font-size: .92rem; color: #666; line-height: 1.6; }
-
-        /* ===== MỚI: CÁCH THỰC HIỆN ===== */
-        .lp-steps { width: 100%; padding: 40px 20px 30px; background-color: #ececee; text-align: center; box-sizing: border-box; }
-        .steps-badge { display: inline-block; background: #fff0f3; color: #c2185b; font-size: .78rem; font-weight: 800; letter-spacing: .08em; padding: 6px 14px; border-radius: 20px; margin-bottom: 12px; }
-        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; max-width: 1100px; margin: 0 auto; position: relative; }
-        .step-card { position: relative; background: #fff; border: 1px solid #e8e3e5; border-radius: 16px; padding: 22px 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform .2s, box-shadow .2s; }
-        .step-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(194,24,91,.14); }
-        .step-num { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #e91e63, #c2185b); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; box-shadow: 0 4px 10px rgba(194,24,91,.35); }
-        .step-card h3 { margin: 0 0 6px; font-size: 1.02rem; color: #111; font-weight: 800; }
-        .step-card p { margin: 0; font-size: .9rem; color: #666; line-height: 1.55; }
-        @media (min-width: 900px) {
-            .step-card:not(:last-child)::after { content: '›'; position: absolute; right: -14px; top: 50%; transform: translateY(-50%); width: 10px; text-align: center; color: #c2185b; font-size: 1.6rem; font-weight: 700; z-index: 2; }
-        }
-        .cta-banner { max-width: 1100px; margin: 28px auto 0; border-radius: 22px; padding: 30px 34px; background: linear-gradient(120deg, #e91e63 0%, #c2185b 55%, #a01049 100%); display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; text-align: left; box-shadow: 0 14px 30px rgba(194,24,91,.3); position: relative; overflow: hidden; }
-        .cta-banner::after { content: ''; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,.1); pointer-events: none; }
-        .cta-text h3 { margin: 0 0 6px; color: #fff; font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.6vw, 1.6rem); }
-        .cta-text p { margin: 0; color: rgba(255,255,255,.9); font-size: .95rem; }
-        .cta-btns { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
-        .cta-btn { border-radius: 30px; padding: 12px 24px; font-weight: 800; font-size: .88rem; cursor: pointer; transition: transform .15s, background .2s, color .2s; }
-        .cta-btn:hover { transform: translateY(-2px); }
-        .cta-btn.solid { background: #fff; color: #c2185b; border: 2px solid #fff; }
-        .cta-btn.ghost { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.7); }
-        .cta-btn.ghost:hover { background: rgba(255,255,255,.15); }
-        @media (max-width: 640px) { .cta-banner { padding: 24px 20px; } .cta-btns { width: 100%; } .cta-btn { flex: 1; } }
-
-        /* ===== MỚI: NÚT LIÊN HỆ ===== */
-        .ct-float { position: fixed; right: 16px; bottom: 18px; z-index: 950; display: flex; flex-direction: column; gap: 10px; }
-        .ct-fab { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: .8rem; text-decoration: none; box-shadow: 0 6px 16px rgba(0,0,0,.25); transition: transform .15s; position: relative; }
-        .ct-fab:hover { transform: scale(1.1); }
-        .ct-fab small { position: absolute; right: 60px; background: #333; color: #fff; padding: 4px 10px; border-radius: 8px; font-size: .75rem; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s; }
-        .ct-fab:hover small { opacity: 1; }
-        .ct-fab.zalo { background: #0068ff; }
-        .ct-fab.mess { background: linear-gradient(135deg, #00b2ff, #a033ff 60%, #ff5280); font-size: 1.3rem; }
-        .ct-fab.tel { background: #2e9e4f; font-size: 1.3rem; }
-        .ct-fab.tel::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid #2e9e4f; animation: ctPing 1.8s infinite; }
-        @keyframes ctPing { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(1.6); opacity: 0; } }
-        .ct-row-btns { max-width: 800px; margin: 20px auto 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .ct-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 30px; font-weight: 800; font-size: .9rem; text-decoration: none; color: #fff; transition: transform .15s, box-shadow .15s; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
-        .ct-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.2); }
-        .ct-btn.zalo { background: #0068ff; }
-        .ct-btn.mess { background: linear-gradient(135deg, #00b2ff, #a033ff 60%, #ff5280); }
-        .ct-btn.tel { background: #2e9e4f; }
-        .lp-support a.ct-link { color: #c2185b; font-weight: 800; text-decoration: underline; cursor: pointer; }
-
-        /* ===== MỚI: CÂU HỎI THƯỜNG GẶP ===== */
-        .lp-faq { width: 100%; padding: 40px 20px 50px; background-color: #f7f3f5; text-align: center; box-sizing: border-box; }
-        .faq-list { max-width: 800px; margin: 0 auto; text-align: left; display: flex; flex-direction: column; gap: 12px; }
-        .faq-item { background: #fff; border: 1px solid #e8e3e5; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); overflow: hidden; transition: border-color .2s, box-shadow .2s; }
-        .faq-item[open] { border-color: #c2185b; box-shadow: 0 6px 20px rgba(194,24,91,.12); }
-        .faq-item summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px 20px; font-weight: 700; color: #222; font-size: 1rem; user-select: none; }
-        .faq-item summary::-webkit-details-marker { display: none; }
-        .faq-item summary::before { content: '?'; flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: #fff0f3; color: #c2185b; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: .9rem; }
-        .faq-item summary::after { content: '+'; margin-left: auto; font-size: 1.5rem; line-height: 1; color: #c2185b; font-weight: 400; transition: transform .25s; }
-        .faq-item[open] summary::after { transform: rotate(45deg); }
-        .faq-item summary:hover { background: #fffafb; }
-        .faq-ans { padding: 0 20px 18px 60px; color: #555; font-size: .95rem; line-height: 1.65; }
-        .faq-ans b { color: #c2185b; }
-        @media (max-width: 560px) { .faq-ans { padding-left: 20px; } .lp-why .sec-title-main, .lp-faq .sec-title-main { font-size: 1.6rem; } }
-
-        /* Hiệu ứng nhấn mạnh mẫu vừa chọn */
-        .card.card-pick { animation: pickPulse 2.4s ease; }
-        @keyframes pickPulse {
-            0%, 60% { box-shadow: 0 0 0 4px #e91e63, 0 0 30px rgba(233,30,99,.55); }
-            100% { box-shadow: 0 0 0 0 rgba(233,30,99,0); }
-        }
-        .logo { cursor: pointer; }
-    </style>
 </head>
 <body class="landing-on">
 
@@ -252,15 +22,15 @@
             <button type="button" id="lp-skip">Xem tất cả dạng lưới ›</button>
         </div>
 
-        <!-- 1. THÊM ĐOẠN GIỚI THIỆU TRANG WEB -->
+        <!-- GIỚI THIỆU TRANG WEB -->
         <div class="lp-intro-box">
             <h1 class="lp-intro-title">Lưu Giữ Khoảnh Khắc Hạnh Phúc</h1>
             <p class="lp-intro-desc">Nền tảng tạo thiệp cưới online hiện đại, tinh tế và sang trọng. Dễ dàng tạo mẫu, cá nhân hóa thông tin và gửi lời mời trang trọng nhất đến những người thân yêu.</p>
         </div>
 
         <h2 class="lp-title">Chọn mẫu thiệp cưới bạn yêu thích</h2>
-        
-        <!-- BĂNG CHUYỀN 3D CỦA BẠN -->
+
+        <!-- BĂNG CHUYỀN 3D -->
         <div class="cf-wrap">
             <div class="cf-stage" id="cf-stage">
                 <p class="cf-empty">Đang tải mẫu thiệp...</p>
@@ -271,7 +41,7 @@
         <p class="cf-cap" id="cf-cap"></p>
         <div class="cf-dots" id="cf-dots"></div>
 
-        <!-- MỚI: TẠI SAO NÊN CHỌN CHUNG ĐÔI -->
+        <!-- TẠI SAO NÊN CHỌN CHUNG ĐÔI -->
         <div class="lp-why">
             <h2 class="sec-title-main">Tại sao nên chọn <span>Chung Đôi</span>?</h2>
             <p class="sec-subtitle">Mọi thứ bạn cần để có tấm thiệp cưới hoàn hảo, từ chọn mẫu đến lúc nhận thiệp trên tay.</p>
@@ -310,7 +80,7 @@
             </div>
         </div>
 
-        <!-- MỚI: CÁCH THỰC HIỆN -->
+        <!-- CÁCH THỰC HIỆN -->
         <div class="lp-steps">
             <span class="steps-badge">CÁCH THỰC HIỆN</span>
             <h2 class="sec-title-main">Đặt thiệp cưới chỉ với <span>4 bước</span></h2>
@@ -351,7 +121,7 @@
             </div>
         </div>
 
-        <!-- 2. THÊM ĐÁNH GIÁ TỪ KHÁCH HÀNG -->
+        <!-- ĐÁNH GIÁ TỪ KHÁCH HÀNG -->
         <div class="lp-testimonials">
             <h2 class="sec-title-main">Đánh giá từ <span>khách hàng</span></h2>
             <p class="sec-subtitle">Những lời nhắn thật lòng từ các cặp đôi đã tin tưởng Chung Đôi cho ngày trọng đại.</p>
@@ -408,7 +178,7 @@
             </div>
         </div>
 
-        <!-- MỚI: CÂU HỎI THƯỜNG GẶP -->
+        <!-- CÂU HỎI THƯỜNG GẶP -->
         <div class="lp-faq">
             <h2 class="sec-title-main">Câu hỏi <span>thường gặp</span></h2>
             <p class="sec-subtitle">Những thắc mắc phổ biến của các cặp đôi trước khi đặt in thiệp cưới.</p>
@@ -445,7 +215,7 @@
             </div>
         </div>
 
-        <!-- 3. THÊM CÂU CHÂM NGÔN & CAM KẾT HỖ TRỢ -->
+        <!-- CHÂM NGÔN & CAM KẾT HỖ TRỢ -->
         <div class="lp-support">
             <h2 class="sec-title-main">Khi bạn cần, <span>tụi mình luôn có mặt</span></h2>
             <p class="sec-subtitle">Chung Đôi luôn sẵn sàng hỗ trợ 24/7. <a class="ct-link" data-ct="zalo" target="_blank" rel="noopener">Nhắn tụi mình</a> bất cứ khi nào bạn cần.</p>
@@ -765,466 +535,8 @@ LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
 
     <footer></footer>
 
-    <!-- JS chính -->
+    <!-- JS: script.js (người phụ trách JS) PHẢI nạp trước, rồi mới đến script-extra.js -->
     <script src="script.js"></script>
-
-    <!-- JS mở rộng: Tự động gom nội dung, nén ảnh Base64 & phân quyền xem chi tiết -->
-    <script>
-    (() => {
-        const $ = (id) => document.getElementById(id);
-        const $$ = (s) => [...document.querySelectorAll(s)];
-        const val = (id) => $(id).value.trim();
-        const radio = (n) => ($$(`input[name="${n}"]:checked`)[0] || {}).value || '';
-        const mk = (tag, cls, txt) => { const e = document.createElement(tag); e.className = cls; e.textContent = txt || ''; return e; };
-        const dsMau = () => (typeof tatCaMauThiep !== 'undefined' ? tatCaMauThiep : []);
-
-        let base64AnhRe = '';
-        let base64AnhDau = '';
-
-        function docFileBase64(file, callback) {
-            if (!file) return callback('');
-            const reader = new FileReader();
-            reader.onload = (e) => callback(e.target.result);
-            reader.readAsDataURL(file);
-        }
-
-        function popup(id, onClose) {
-            const ov = $(id);
-            const open = () => { ov.classList.add('open'); ov.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; };
-            const close = () => { ov.classList.remove('open'); ov.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; if (onClose) onClose(); };
-            ov.addEventListener('click', (e) => { if (e.target === ov || e.target.closest('[data-close]')) close(); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov.classList.contains('open')) close(); });
-            return { open, close };
-        }
-
-        const pv = popup('preview-overlay');
-        let tenThiep = '';
-        $('grid-mau-thiep').addEventListener('click', (e) => {
-            const card = e.target.closest('.card');
-            if (!card) return;
-            const txt = (s) => (card.querySelector(s) || {}).textContent || '';
-            const img = card.querySelector('.card-img');
-            $('pv-img').src = img ? img.src : '';
-            $('pv-img').alt = img ? img.alt : '';
-            $('pv-img').parentElement.scrollTop = 0;
-            tenThiep = txt('.card-title');
-            $('pv-badge').textContent = txt('.card-badge');
-            $('pv-title').textContent = tenThiep;
-            $('pv-price').textContent = txt('.card-price');
-            $('pv-sold').textContent = txt('.card-orders');
-            pv.open();
-        });
-        $('pv-order').addEventListener('click', () => {
-            const opt = [...$('chon_mau_thiep').options].find((o) => o.value && o.textContent.includes('] ' + tenThiep + ' -'));
-            if (opt) $('chon_mau_thiep').value = opt.value;
-            pv.close();
-            tamTinh();
-            $('dat-hang').scrollIntoView({ behavior: 'smooth' });
-        });
-
-        function tamTinh() {
-            const sl = parseInt($('so_luong').value) || 0;
-            const mau = dsMau().find((t) => t.ma_code === $('chon_mau_thiep').value);
-            const gia = mau ? Number(mau.gia_tien) : 0;
-            $('preview-giam-gia').textContent = sl >= 500 ? '🎉 Đã áp dụng giảm 10% (từ 500 thiệp)' : '';
-            $('preview-don-gia').textContent = gia.toLocaleString() + ' đ';
-            $('preview-tong-tien').textContent = Math.round(gia * sl * (sl >= 500 ? 0.9 : 1)).toLocaleString() + ' đ';
-        }
-        $('chon_mau_thiep').addEventListener('change', tamTinh);
-        $('so_luong').addEventListener('input', tamTinh);
-
-        const bat = (k) => { const sw = document.querySelector(`[data-sec="${k}"] .ct-switch input`); return !sw || sw.checked; };
-        $$('.ct-sec').forEach((sec) => {
-            const sw = sec.querySelector('.ct-switch input');
-            sec.querySelector('.ct-head').addEventListener('click', (e) => { if (!e.target.closest('.ct-switch')) sec.classList.toggle('collapsed'); });
-            if (sw) sw.addEventListener('change', () => sec.classList.toggle('off', !sw.checked));
-        });
-
-        let lastAuto = '';
-        const dongBoTen = () => {
-            const re = val('ct_re'), dau = val('ct_dau'), o = $('ten_khach');
-            if (re && dau && (o.value === '' || o.value === lastAuto)) o.value = lastAuto = re + ' & ' + dau;
-        };
-        $('ct_re').addEventListener('input', dongBoTen);
-        $('ct_dau').addEventListener('input', dongBoTen);
-
-        $('ct_anh_re').addEventListener('change', (e) => {
-            const f = e.target.files[0], box = $('pv_re');
-            box.textContent = '🖼';
-            if (!f) { base64AnhRe = ''; return; }
-            docFileBase64(f, (res) => {
-                base64AnhRe = res;
-                box.innerHTML = `<img src="${res}" style="width:100%;height:100%;object-fit:cover;">`;
-            });
-        });
-
-        $('ct_anh_dau').addEventListener('change', (e) => {
-            const f = e.target.files[0], box = $('pv_dau');
-            box.textContent = '🖼';
-            if (!f) { base64AnhDau = ''; return; }
-            docFileBase64(f, (res) => {
-                base64AnhDau = res;
-                box.innerHTML = `<img src="${res}" style="width:100%;height:100%;object-fit:cover;">`;
-            });
-        });
-
-        const TIEU_DE = { 'Tiệc cưới': 'THÔNG TIN TIỆC CƯỚI', 'Tiệc báo hỷ': 'THÔNG TIN TIỆC BÁO HỶ', 'Tiệc đính hôn': 'THÔNG TIN TIỆC ĐÍNH HÔN' };
-        let tiecTruoc = 'Tiệc cưới';
-        $$('input[name="ct_loai_tiec"]').forEach((r) => r.addEventListener('change', () => {
-            if (!r.checked) return;
-            const t = $('ct_tiec_tieude');
-            if (t.value === '' || t.value === TIEU_DE[tiecTruoc]) t.value = TIEU_DE[r.value];
-            tiecTruoc = r.value;
-        }));
-
-        function taoDS(listId, addId, nhan, gridCls, fields, macDinh) {
-            const list = $(listId);
-            const head = '<div class="ct-row-head"><span class="ct-row-title"></span><span class="ct-row-tools">' +
-                '<button type="button" data-a="up" title="Lên">▲</button><button type="button" data-a="down" title="Xuống">▼</button>' +
-                '<button type="button" data-a="del" title="Xoá">🗑</button></span></div>';
-            const body = `<div class="ct-grid ${gridCls}">` + fields.map(([f, l, t, p]) =>
-                `<label class="lbw"><span>${l}</span><input type="${t}" class="form-input" data-f="${f}"${p ? ` placeholder="${p}"` : ''}></label>`).join('') + '</div>';
-            const danhSo = () => [...list.children].forEach((r, i) => { r.querySelector('.ct-row-title').textContent = nhan + ' ' + (i + 1); });
-            const them = (v = {}) => {
-                const r = mk('div', 'ct-row');
-                r.innerHTML = head + body;
-                Object.entries(v).forEach(([k, x]) => { r.querySelector(`[data-f="${k}"]`).value = x; });
-                list.append(r);
-                danhSo();
-            };
-            list.addEventListener('click', (e) => {
-                const b = e.target.closest('button[data-a]');
-                if (!b) return;
-                const r = b.closest('.ct-row'), a = b.dataset.a;
-                if (a === 'del') r.remove();
-                else if (a === 'up' && r.previousElementSibling) r.previousElementSibling.before(r);
-                else if (a === 'down' && r.nextElementSibling) r.nextElementSibling.after(r);
-                danhSo();
-            });
-            $(addId).addEventListener('click', () => them());
-            const khoiTao = () => { list.innerHTML = ''; macDinh.forEach((v) => them(v)); };
-            khoiTao();
-            return { khoiTao, hang: () => [...list.children].map((r) => (k) => r.querySelector(`[data-f="${k}"]`).value.trim()) };
-        }
-        const dsLe = taoDS('ct_le_list', 'ct_le_add', 'Lễ', '', [['ten', 'Tên lễ', 'text', 'VD: Lễ Vu Quy'], ['dd', 'Địa điểm', 'text', 'VD: Tư gia nhà gái'], ['ngay', 'Ngày', 'date'], ['gio', 'Giờ', 'time']], []);
-        const dsLt = taoDS('ct_lt_list', 'ct_lt_add', 'Hoạt động', 'time', [['gio', 'Giờ', 'time'], ['nd', 'Nội dung', 'text', 'VD: Đón khách']], [{ gio: '17:30', nd: 'Đón khách' }, { gio: '18:30', nd: 'Khai tiệc' }]);
-
-        const ngay = (v) => (v ? v.split('-').reverse().join('/') : '');
-        const gio = (v, fmt) => {
-            if (!v) return '';
-            const [h, m] = v.split(':'), hh = parseInt(h, 10);
-            return fmt === '24 giờ' ? String(hh).padStart(2, '0') + ':' + m : (hh % 12 || 12) + ':' + m + ' ' + (hh < 12 ? 'SA' : 'CH');
-        };
-
-        function tomTat() {
-            const fmt = radio('ct_tiec_fmt'), out = [];
-            const them = (tieu, lines) => { lines = lines.filter(Boolean); if (lines.length) out.push('[' + tieu + ']\n' + lines.join('\n')); };
-            const nguoi = (vai, ten, dx) => (ten ? vai + ': ' + ten + (dx ? ' - ' + dx : '') : '');
-            const tieuDe = (id) => (val(id) ? 'Tiêu đề: ' + val(id) : '');
-
-            const re = val('ct_re'), dau = val('ct_dau');
-            them('Thông tin cơ bản', [nguoi('Chú rể', re, val('ct_dx_re')), nguoi('Cô dâu', dau, val('ct_dx_dau')), re || dau ? 'Thứ tự hiển thị: ' + radio('ct_thu_tu') : '']);
-            
-            if (bat('anh')) {
-                them('Ảnh đôi', [
-                    base64AnhRe ? '[ANH_RE]' + base64AnhRe + '[/ANH_RE]' : '',
-                    base64AnhDau ? '[ANH_DAU]' + base64AnhDau + '[/ANH_DAU]' : ''
-                ]);
-            }
-            if (bat('thongbao')) them('Lời thông báo', [val('ct_thongbao').replace(/\s*\n\s*/g, ' / ')]);
-            if (bat('giadinh')) {
-                const nha = (ten, p) => {
-                    const o = val(p + '_ong'), b = val(p + '_ba'), dx = val(p + '_dx'), dc = val(p + '_dc');
-                    const ds = [dx && '(' + dx + ')', o && 'Ông ' + o, b && 'Bà ' + b].filter(Boolean).join(', ');
-                    return [o || b ? ten + ': ' + ds : '', dc ? 'Địa chỉ ' + ten.toLowerCase() + ': ' + dc : ''];
-                };
-                them('Thông tin gia đình', [...nha('Nhà trai', 'ct_nt'), ...nha('Nhà gái', 'ct_ng')]);
-            }
-            const le = dsLe.hang().map((g) => [g('ten'), ngay(g('ngay')), gio(g('gio'), fmt), g('dd')].filter(Boolean).join(' | ')).filter(Boolean);
-            if (le.length) them('Lễ', [tieuDe('ct_le_tieude'), ...le]);
-            if (bat('tiec')) {
-                const n = ngay(val('ct_tiec_ngay')), g = gio(val('ct_tiec_gio'), fmt);
-                them(radio('ct_loai_tiec') || 'Tiệc', [tieuDe('ct_tiec_tieude'), n && 'Ngày: ' + n, g && 'Giờ: ' + g]);
-            }
-            if (bat('lichtrinh')) {
-                const hd = dsLt.hang().map((g) => [gio(g('gio'), fmt), g('nd')].filter(Boolean).join(' - ')).filter(Boolean);
-                if (hd.length) them('Lịch trình ngày cưới', [tieuDe('ct_lt_tieude'), ...hd]);
-            }
-            if (bat('camon')) them('Lời cảm ơn', [val('ct_camon')]);
-            return out.length ? '--- NỘI DUNG THIỆP ---\n' + out.join('\n\n') : '';
-        }
-
-        document.addEventListener('submit', (e) => {
-            if (e.target.id !== 'form-dat-hang') return;
-            const ta = $('yeu_cau_customize'), goc = ta.value, g = goc.trim(), t = tomTat();
-            ta.value = g && t ? g + '\n\n' + t : g || t;
-            setTimeout(() => { ta.value = goc; }, 0);
-        }, true);
-
-        $('form-dat-hang').addEventListener('reset', () => setTimeout(() => {
-            base64AnhRe = '';
-            base64AnhDau = '';
-            tamTinh();
-            lastAuto = ''; tiecTruoc = 'Tiệc cưới';
-            $('pv_re').textContent = $('pv_dau').textContent = '🖼';
-            dsLe.khoiTao(); dsLt.khoiTao();
-            $$('.ct-sec').forEach((s) => { const sw = s.querySelector('.ct-switch input'); s.classList.toggle('off', !!sw && !sw.checked); });
-        }, 0));
-
-        // Quản trị viên
-        const QT = { isAdmin: false, mask: (p) => { p = String(p == null ? '' : p); return p.length > 6 ? p.slice(0, 3) + '*'.repeat(p.length - 6) + p.slice(-3) : p; } };
-        const ad = popup('ad-overlay'), tb = $('tbody-don-hang'), toggle = $('admin-toggle');
-        const taiLaiBang = () => { if (typeof taiDanhSachDonHang === 'function') taiDanhSachDonHang(); };
-        const capNhatNut = () => { toggle.textContent = QT.isAdmin ? '🔓 Đăng xuất' : '🔒 Quản trị'; };
-
-        new MutationObserver(() => {
-            if (QT.isAdmin) return;
-            [...tb.rows].forEach((tr) => { const c = tr.cells[2], s = c && c.textContent.trim(); if (s && /^\d{7,}$/.test(s)) c.textContent = QT.mask(s); });
-        }).observe(tb, { childList: true });
-
-        toggle.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (!QT.isAdmin) { $('ad-err').textContent = ''; ad.open(); setTimeout(() => $('ad-email').focus(), 50); return; }
-            try { await db.auth.signOut(); } catch (x) {}
-            QT.isAdmin = false; capNhatNut(); taiLaiBang();
-        });
-
-        $('ad-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = $('ad-submit'), err = $('ad-err');
-            btn.disabled = true; err.textContent = '';
-            try {
-                const { error } = await db.auth.signInWithPassword({ email: val('ad-email'), password: $('ad-pass').value });
-                if (error) err.textContent = 'Đăng nhập thất bại: ' + error.message;
-                else { QT.isAdmin = true; $('ad-pass').value = ''; ad.close(); capNhatNut(); taiLaiBang(); }
-            } catch (x) { err.textContent = 'Không kết nối được hệ thống: ' + x.message; }
-            btn.disabled = false;
-        });
-
-        (async () => {
-            try { const { data } = await db.auth.getSession(); if (data && data.session) { QT.isAdmin = true; capNhatNut(); taiLaiBang(); } } catch (x) {}
-        })();
-
-        // Chi tiết đơn hàng
-        let token = 0;
-        const od = popup('od-overlay', () => { token++; });
-        const thongBao = (t) => { $('od-body').replaceChildren(mk('div', 'od-msg', t)); };
-
-        function hienThi(don) {
-            const admin = QT.isAdmin;
-            const dl = mk('dl', 'od-list');
-            const ngayDat = (v) => { const t = new Date(v); return isNaN(t) ? String(v) : t.toLocaleString('vi-VN'); };
-
-            dl.append(mk('dt', '', 'Mã đơn'), mk('dd', '', '#' + don.id));
-            dl.append(mk('dt', '', 'Khách hàng'), mk('dd', '', don.ten_khach_hang || ''));
-            dl.append(mk('dt', '', 'Số điện thoại'), mk('dd', '', admin ? String(don.so_dien_thoai) : QT.mask(don.so_dien_thoai)));
-
-            const m = dsMau().find((t) => t.ma_code === don.ma_code_thiep);
-            dl.append(mk('dt', '', 'Mẫu thiệp'), mk('dd', '', m ? `[${don.ma_code_thiep}] ${m.ten_thiep} (${m.phong_cach})` : don.ma_code_thiep));
-            dl.append(mk('dt', '', 'Số lượng in'), mk('dd', '', Number(don.so_luong_in).toLocaleString() + ' thiệp'));
-            dl.append(mk('dt', '', 'Tổng tiền'), mk('dd', 'od-money', parseInt(don.tong_tien).toLocaleString() + ' đ'));
-            dl.append(mk('dt', '', 'Trạng thái'), mk('dd', '', don.trang_thai || 'Mới đặt'));
-            if (don.created_at) dl.append(mk('dt', '', 'Ngày đặt'), mk('dd', '', ngayDat(don.created_at)));
-
-            dl.append(mk('dt', '', 'Nội dung thiệp / Chi tiết'));
-
-            if (!admin) {
-                const ddKhoa = mk('dd', 'od-note');
-                ddKhoa.innerHTML = '<span style="color:#c2185b;font-weight:600;">🔒 Thông tin riêng tư</span> — Chỉ Quản trị viên mới xem được thông tin in thiệp và ảnh cưới của khách. (Vui lòng bấm <b>Quản trị</b> ở thanh menu trên cùng để đăng nhập).';
-                dl.append(ddKhoa);
-            } else {
-                let rawText = don.yeu_cau_customize || '';
-                let anhReSrc = '', anhDauSrc = '';
-
-                const matchRe = rawText.match(/\[ANH_RE\](.*?)\[\/ANH_RE\]/);
-                if (matchRe) {
-                    anhReSrc = matchRe[1];
-                    rawText = rawText.replace(matchRe[0], '');
-                }
-
-                const matchDau = rawText.match(/\[ANH_DAU\](.*?)\[\/ANH_DAU\]/);
-                if (matchDau) {
-                    anhDauSrc = matchDau[1];
-                    rawText = rawText.replace(matchDau[0], '');
-                }
-
-                const ddChiTiet = mk('dd', '');
-
-                if (anhReSrc || anhDauSrc) {
-                    const wrapAnh = mk('div', '');
-                    wrapAnh.style.cssText = 'display:flex;gap:20px;margin-bottom:12px;background:#fdf7f9;padding:12px 16px;border-radius:8px;border:1px dashed #e3d6db;';
-                    wrapAnh.innerHTML = `
-                        ${anhReSrc ? `<div style="text-align:center;"><img src="${anhReSrc}" style="width:85px;height:85px;border-radius:50%;object-fit:cover;border:2px solid #c2185b;display:block;"><small style="color:#555;font-weight:600;display:block;margin-top:4px;">Chú rể</small></div>` : ''}
-                        ${anhDauSrc ? `<div style="text-align:center;"><img src="${anhDauSrc}" style="width:85px;height:85px;border-radius:50%;object-fit:cover;border:2px solid #c2185b;display:block;"><small style="color:#555;font-weight:600;display:block;margin-top:4px;">Cô dâu</small></div>` : ''}
-                    `;
-                    ddChiTiet.append(wrapAnh);
-                }
-
-                const wrapNote = mk('div', 'od-note');
-                wrapNote.textContent = rawText.trim() || 'Khách không điền thêm thông tin hoặc yêu cầu nào.';
-                ddChiTiet.append(wrapNote);
-
-                dl.append(ddChiTiet);
-            }
-
-            $('od-body').replaceChildren(dl);
-        }
-
-        tb.addEventListener('click', async (e) => {
-            const tr = e.target.closest('tr');
-            const m = tr && tr.cells.length && /^#(\d+)$/.exec(tr.cells[0].textContent.trim());
-            if (!m) return;
-            const id = parseInt(m[1], 10), my = ++token;
-            $('od-title').textContent = 'Chi tiết đơn hàng #' + id;
-            thongBao('Đang tải thông tin đơn hàng...');
-            od.open();
-            try {
-                const { data, error } = await db.from('don_dat_hang').select('*').eq('id', id).single();
-                if (my !== token) return;
-                if (error || !data) thongBao('Không tải được đơn hàng' + (error ? ': ' + error.message : '.'));
-                else hienThi(data);
-            } catch (err) {
-                if (my === token) thongBao('Không tải được đơn hàng: ' + err.message);
-            }
-        });
-    })();
-    </script>
-
-    <!-- CẤU HÌNH LIÊN HỆ: chỉ cần sửa 3 dòng dưới đây -->
-    <script>
-    (() => {
-        const LIEN_HE = {
-            zalo: '0900000000',        // Số điện thoại Zalo của shop (số thôi, không dấu cách)
-            messenger: 'ten-fanpage',  // Tên/ID fanpage Facebook (phần sau facebook.com/)
-            dienThoai: '0900000000'    // Số hotline để khách bấm gọi
-        };
-        const href = {
-            zalo: 'https://zalo.me/' + LIEN_HE.zalo,
-            mess: 'https://m.me/' + LIEN_HE.messenger,
-            tel: 'tel:' + LIEN_HE.dienThoai
-        };
-        document.querySelectorAll('[data-ct]').forEach((a) => { a.href = href[a.dataset.ct]; });
-    })();
-    </script>
-
-    <!-- JS BĂNG CHUYỀN SCROLL CỦA BẠN (CƠ CHẾ CHUYỂN MÀN HÌNH CHUẨN GỐC) -->
-    <script>
-    (() => {
-        const $ = (id) => document.getElementById(id);
-        const stage = $('cf-stage'), dots = $('cf-dots'), cap = $('cf-cap'), grid = $('grid-mau-thiep');
-        let items = [], dotEls = [], cards = [], cur = 0, moved = false;
-
-        function layout() {
-            if (!items.length) return;
-            const w = items[0].offsetWidth || 300;
-            items.forEach((it, i) => {
-                const d = i - cur, a = Math.abs(d), s = Math.sign(d);
-                const x = a === 0 ? 0 : s * (w * 0.72 + (a - 1) * w * 0.3);
-                const z = a === 0 ? 0 : -120 - a * 40;
-                const r = a === 0 ? 0 : -s * 38;
-                it.style.transform = `translate(-50%,-50%) translateX(${x}px) translateZ(${z}px) rotateY(${r}deg)`;
-                it.style.opacity = a > 5 ? 0 : Math.max(0.15, 1 - a * 0.17);
-                it.style.zIndex = 100 - a;
-                it.style.pointerEvents = a > 5 ? 'none' : 'auto';
-                it.classList.toggle('center', a === 0);
-            });
-            dotEls.forEach((d, i) => d.classList.toggle('active', i === cur));
-            const c = cards[cur];
-            if (c) {
-                const t = (s) => (c.querySelector(s) || {}).textContent || '';
-                cap.textContent = [t('.card-title'), t('.card-price')].filter(Boolean).join(' · ');
-            }
-        }
-
-        function go(i) {
-            if (!items.length) return;
-            cur = (i + items.length) % items.length;
-            layout();
-        }
-
-        /* HÀM CHUYỂN TỪ TRANG ĐẦU SANG GIAO DIỆN CHÍNH KHI BẤM MẪU */
-        function enter(i) {
-            const card = cards[i];
-            document.body.classList.remove('landing-on'); // Ẩn màn hình intro
-            window.scrollTo(0, 0);
-            if (!card) return;
-            setTimeout(() => {
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                card.classList.remove('card-pick');
-                void card.offsetWidth;
-                card.classList.add('card-pick');
-                setTimeout(() => card.classList.remove('card-pick'), 2600);
-            }, 60);
-        }
-
-        function build() {
-            cards = [...grid.querySelectorAll('.card')];
-            stage.innerHTML = ''; dots.innerHTML = ''; items = []; dotEls = [];
-            if (!cards.length) { stage.innerHTML = '<p class="cf-empty">Đang tải mẫu thiệp...</p>'; cap.textContent = ''; return; }
-            if (cur >= cards.length) cur = 0;
-            cards.forEach((c, i) => {
-                const im = c.querySelector('.card-img');
-                const it = document.createElement('div');
-                it.className = 'cf-item';
-                const img = document.createElement('img');
-                img.src = im ? im.src : '';
-                img.alt = im ? im.alt : '';
-                img.draggable = false;
-                it.append(img);
-                it.addEventListener('click', () => { if (moved) return; i === cur ? enter(i) : go(i); });
-                stage.append(it); items.push(it);
-                const d = document.createElement('button');
-                d.type = 'button'; d.className = 'cf-dot'; d.setAttribute('aria-label', 'Mẫu ' + (i + 1));
-                d.addEventListener('click', () => go(i));
-                dots.append(d); dotEls.push(d);
-            });
-            layout();
-        }
-
-        let pending = false;
-        new MutationObserver(() => {
-            if (pending) return; pending = true;
-            requestAnimationFrame(() => { pending = false; build(); });
-        }).observe(grid, { childList: true });
-        build();
-
-        $('cf-prev').addEventListener('click', () => go(cur - 1));
-        $('cf-next').addEventListener('click', () => go(cur + 1));
-        window.addEventListener('resize', layout);
-
-        document.addEventListener('keydown', (e) => {
-            if (!document.body.classList.contains('landing-on')) return;
-            if (e.key === 'ArrowLeft') go(cur - 1);
-            else if (e.key === 'ArrowRight') go(cur + 1);
-            else if (e.key === 'Enter') enter(cur);
-        });
-
-        let sx = null;
-        stage.addEventListener('pointerdown', (e) => { sx = e.clientX; moved = false; });
-        window.addEventListener('pointerup', (e) => {
-            if (sx === null) return;
-            const dx = e.clientX - sx; sx = null;
-            if (Math.abs(dx) > 50) { moved = true; go(cur + (dx < 0 ? 1 : -1)); setTimeout(() => { moved = false; }, 50); }
-        });
-
-        stage.addEventListener('wheel', (e) => {
-            if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 30) { e.preventDefault(); go(cur + (e.deltaX > 0 ? 1 : -1)); }
-        }, { passive: false });
-
-        /* Nút "Xem tất cả dạng lưới" -> Sang giao diện chính */
-        $('lp-skip').addEventListener('click', () => {
-            document.body.classList.remove('landing-on');
-            window.scrollTo(0, 0);
-            setTimeout(() => $('bo-suu-tap').scrollIntoView({ behavior: 'smooth' }), 60);
-        });
-
-        /* Bấm logo ở Navbar -> Quay lại màn hình Intro trang đầu */
-        document.querySelector('.navbar .logo').addEventListener('click', () => {
-            document.body.classList.add('landing-on');
-            window.scrollTo(0, 0);
-            layout();
-        });
-    })();
-    </script>
+   
 </body>
 </html>
