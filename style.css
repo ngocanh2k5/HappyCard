@@ -323,3 +323,11 @@ body.landing-on .landing { display: flex; }
     .form-row { flex-direction: column; gap: 0; }
     .filter-container { justify-content: flex-start; }
 }
+/* Hiệu ứng nhấn mạnh mẫu vừa chọn từ trang chủ (Landing Page) */
+.card.card-pick {
+    animation: pickPulse 2.4s ease !important;
+}
+@keyframes pickPulse {
+    0%, 60% { box-shadow: 0 0 0 4px #e91e63, 0 0 30px rgba(233, 30, 99, 0.55) !important; }
+    100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0) !important; }
+}
