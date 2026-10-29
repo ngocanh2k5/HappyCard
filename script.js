@@ -512,9 +512,9 @@ function veBieuDoChartJS(danhSach) {
 // =========================================================
 (() => {
     const LIEN_HE = {
-        zalo: '0900000000',        // Sửa số điện thoại Zalo của shop vào đây
-        messenger: 'ten-fanpage',  // Sửa Tên/ID fanpage Facebook vào đây
-        dienThoai: '0900000000'    // Sửa Số hotline để khách bấm gọi
+        zalo: '0342783964',        
+        messenger: 'https://www.facebook.com/share/1AqXNvbvJj/',  
+        dienThoai: '0342783964'    
     };
     
     const href = {
