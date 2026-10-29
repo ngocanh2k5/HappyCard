@@ -6,10 +6,10 @@
     <title>Chung Đôi - Thiệp Cưới Cao Cấp</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 
-    <!-- CSS: style.css (người phụ trách CSS) rồi style-extra.css (CSS bổ sung) -->
+    <!-- CSS: style.css -->
     <link rel="stylesheet" href="style.css">
    
-
+    <!-- Thư viện Supabase & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -225,7 +225,7 @@
                     <div class="support-icon icon-pink">⚡</div>
                     <div class="support-text">
                         <label>Thời gian phản hồi</label>
-                        <strong>Dưới 1 phút</strong>
+                        <strong style="color: black;">Dưới 1 phút</strong>
                     </div>
                 </div>
                 <div class="support-divider"></div>
@@ -233,7 +233,7 @@
                     <div class="support-icon icon-green">✓</div>
                     <div class="support-text">
                         <label>Hỗ trợ chỉnh sửa</label>
-                        <strong>Đến khi bạn hài lòng</strong>
+                        <strong style="color: black;">Đến khi bạn hài lòng</strong>
                     </div>
                 </div>
             </div>
@@ -241,7 +241,6 @@
             <div class="ct-row-btns">
                 <a class="ct-btn zalo" data-ct="zalo" target="_blank" rel="noopener">💬 Chat Zalo</a>
                 <a class="ct-btn mess" data-ct="mess" target="_blank" rel="noopener">✉️ Messenger</a>
-                <a class="ct-btn tel" data-ct="tel">📞 Gọi ngay</a>
             </div>
         </div>
     </div>
@@ -250,10 +249,9 @@
     <div class="ct-float">
         <a class="ct-fab zalo" data-ct="zalo" target="_blank" rel="noopener" aria-label="Chat Zalo">Zalo<small>Chat Zalo</small></a>
         <a class="ct-fab mess" data-ct="mess" target="_blank" rel="noopener" aria-label="Messenger">✉️<small>Messenger</small></a>
-        <a class="ct-fab tel" data-ct="tel" aria-label="Gọi điện">📞<small>Gọi ngay</small></a>
     </div>
 
-    <!-- GIAO DIỆN CHÍNH (XUẤT HIỆN KHI NHẤN CHỌN MẪU THIỆP HOẶC NÚT SKIP) -->
+    <!-- GIAO DIỆN CHÍNH -->
     <nav class="navbar">
         <div class="logo">💍 Chung Đôi</div>
         <ul class="nav-links">
@@ -287,264 +285,4 @@
                     <option value="Hoàng gia châu Âu">Hoàng gia châu Âu</option>
                 </select>
             </div>
-            <p class="hint-text">👆 Nhấn vào một mẫu thiệp để xem trước và chọn đặt in</p>
-            <div id="grid-mau-thiep" class="grid-cards">
-                <p style="text-align: center; width: 100%; color: #888;">Đang tải danh sách mẫu thiệp từ hệ thống...</p>
-            </div>
-        </section>
-
-        <!-- KHU VỰC 2: FORM ĐẶT HÀNG -->
-        <section id="dat-hang" class="section-box order-section">
-            <h2 class="section-title">Đặt In Thiệp Cưới</h2>
-            <p class="promo-text">🎁 Ưu đãi đặc biệt: Giảm ngay 10% khi đặt in từ 500 thiệp trở lên!</p>
-
-            <form id="form-dat-hang" class="order-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="ten_khach">Họ và tên Cô Dâu & Chú Rể *</label>
-                        <input type="text" id="ten_khach" class="form-input" placeholder="VD: Nguyễn Văn A & Trần Thị B" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="so_dien_thoai">Số điện thoại liên hệ *</label>
-                        <input type="tel" id="so_dien_thoai" class="form-input" placeholder="VD: 0912345678" pattern="[0-9]{10,11}" title="Vui lòng nhập 10-11 chữ số" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="chon_mau_thiep">Chọn mẫu thiệp muốn in *</label>
-                        <select id="chon_mau_thiep" class="form-input" required><option value="">-- Đang nạp danh sách mẫu --</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="so_luong">Số lượng thiệp (Tối thiểu 50) *</label>
-                        <input type="number" id="so_luong" class="form-input" min="50" step="10" value="100" required>
-                    </div>
-                </div>
-
-                <!-- Tóm tắt chi phí dự tính -->
-                <div class="order-summary-box" style="background: #fff0f3; padding: 12px 16px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #c2185b;">
-                    <div>Đơn giá mẫu: <strong id="preview-don-gia">0 đ</strong></div>
-                    <div style="margin-top: 4px;">Tổng tiền tạm tính: <strong id="preview-tong-tien" style="color: #c2185b; font-size: 1.15rem;">0 đ</strong></div>
-                    <small id="preview-giam-gia" style="display: block; color: #2e7d32; font-weight: 600; margin-top: 4px;"></small>
-                </div>
-
-                <!-- NỘI DUNG THIỆP -->
-                <div style="margin: 8px 0 18px;">
-                    <h3 class="ct-heading">Nội dung thiệp</h3>
-                    <p class="ct-sub">Điền thông tin sẽ in trên thiệp. Mục nào không cần, hãy tắt công tắc "Hiện".</p>
-
-                    <section class="ct-sec" data-sec="coban">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>💗</span><span class="ct-name">Thông tin cơ bản</span></div>
-                        <div class="ct-body">
-                            <div class="ct-grid">
-                                <div><label class="lb" for="ct_re">Họ tên chú rể</label><input type="text" id="ct_re" class="form-input" placeholder="VD: Nguyễn Văn A"></div>
-                                <div><label class="lb" for="ct_dau">Họ tên cô dâu</label><input type="text" id="ct_dau" class="form-input" placeholder="VD: Trần Thị B"></div>
-                                <div><label class="lb" for="ct_dx_re">Danh xưng chú rể</label><input type="text" id="ct_dx_re" class="form-input" value="Trưởng Nam"></div>
-                                <div><label class="lb" for="ct_dx_dau">Danh xưng cô dâu</label><input type="text" id="ct_dx_dau" class="form-input" value="Út Nữ"></div>
-                            </div>
-                            <label class="lb" style="margin-top:16px;">Thứ tự hiển thị</label>
-                            <div class="seg">
-                                <label><input type="radio" name="ct_thu_tu" value="Nhà trai trước" checked><span>Nhà trai trước</span></label>
-                                <label><input type="radio" name="ct_thu_tu" value="Nhà gái trước"><span>Nhà gái trước</span></label>
-                            </div>
-                            <p class="ct-hint">Chọn bên nào được in trước trên thiệp.</p>
-                        </div>
-                    </section>
-
-                    <section class="ct-sec collapsed" data-sec="anh">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>🖼️</span><span class="ct-name">Ảnh đôi</span>
-                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
-                        <div class="ct-body">
-                            <div class="ct-photos">
-                                <div><div>Ảnh chú rể</div><div class="ct-circle" id="pv_re">🖼</div>
-                                    <label class="ct-upbtn" for="ct_anh_re">Tải lên</label><input type="file" id="ct_anh_re" accept="image/*,.heic" hidden></div>
-                                <div><div>Ảnh cô dâu</div><div class="ct-circle" id="pv_dau">🖼</div>
-                                    <label class="ct-upbtn" for="ct_anh_dau">Tải lên</label><input type="file" id="ct_anh_dau" accept="image/*,.heic" hidden></div>
-                            </div>
-                            <p class="ct-hint" style="text-align:center;">Hỗ trợ ảnh JPG, PNG, GIF, WebP. Ảnh sẽ được lưu cùng đơn để xưởng in xem xét.</p>
-                        </div>
-                    </section>
-
-                    <section class="ct-sec collapsed" data-sec="thongbao">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>📢</span><span class="ct-name">Lời thông báo</span>
-                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
-                        <div class="ct-body">
-                            <label class="lb" for="ct_thongbao">Câu thông báo (để trống nếu không muốn hiện)</label>
-                            <textarea id="ct_thongbao" class="form-input" rows="3">TRÂN TRỌNG BÁO TIN
-LỄ THÀNH HÔN CỦA CON CHÚNG TÔI</textarea>
-                        </div>
-                    </section>
-
-                    <section class="ct-sec collapsed" data-sec="giadinh">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>👨‍👩‍👧</span><span class="ct-name">Thông tin gia đình</span>
-                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
-                        <div class="ct-body">
-                            <div class="ct-subt">Nhà trai</div>
-                            <label class="lb" for="ct_nt_dx">Danh xưng</label>
-                            <input type="text" id="ct_nt_dx" class="form-input" value="Ông Bà" style="margin-bottom:14px;">
-                            <div class="ct-grid" style="margin-bottom:14px;">
-                                <div><label class="lb" for="ct_nt_ong">Ông</label><input type="text" id="ct_nt_ong" class="form-input" placeholder="VD: Nguyễn Văn Hùng"></div>
-                                <div><label class="lb" for="ct_nt_ba">Bà</label><input type="text" id="ct_nt_ba" class="form-input" placeholder="VD: Trần Thị Lan"></div>
-                            </div>
-                            <label class="lb" for="ct_nt_dc">Địa chỉ nhà trai</label>
-                            <textarea id="ct_nt_dc" class="form-input" rows="2" placeholder="Địa chỉ nhà trai"></textarea>
-                            <hr class="ct-sep">
-                            <div class="ct-subt">Nhà gái</div>
-                            <label class="lb" for="ct_ng_dx">Danh xưng</label>
-                            <input type="text" id="ct_ng_dx" class="form-input" value="Ông Bà" style="margin-bottom:14px;">
-                            <div class="ct-grid" style="margin-bottom:14px;">
-                                <div><label class="lb" for="ct_ng_ong">Ông</label><input type="text" id="ct_ng_ong" class="form-input" placeholder="VD: Trần Văn Minh"></div>
-                                <div><label class="lb" for="ct_ng_ba">Bà</label><input type="text" id="ct_ng_ba" class="form-input" placeholder="VD: Phạm Thị Hoa"></div>
-                            </div>
-                            <label class="lb" for="ct_ng_dc">Địa chỉ nhà gái</label>
-                            <textarea id="ct_ng_dc" class="form-input" rows="2" placeholder="Địa chỉ nhà gái"></textarea>
-                        </div>
-                    </section>
-
-                    <section class="ct-sec collapsed" data-sec="le">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>🕒</span><span class="ct-name">Lễ</span></div>
-                        <div class="ct-body">
-                            <label class="lb" for="ct_le_tieude">Tiêu đề mục</label>
-                            <input type="text" id="ct_le_tieude" class="form-input" value="THÔNG TIN LỄ CƯỚI">
-                            <p class="ct-hint">Tiêu đề in phía trên mục này trên thiệp. Để trống nếu bạn muốn bỏ hẳn.</p>
-                            <div class="ct-tip">💡 Bạn có tổ chức lễ vu quy/lễ thành hôn tại nhà không? Nếu có, hãy bấm nút bên dưới để thêm lễ!</div>
-                            <div id="ct_le_list"></div>
-                            <button type="button" class="ct-add" id="ct_le_add">+ Thêm lễ</button>
-                        </div>
-                    </section>
-
-                    <section class="ct-sec collapsed" data-sec="tiec">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>🥂</span><span class="ct-name">Tiệc cưới</span>
-                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
-                        <div class="ct-body">
-                            <div class="seg" style="margin-bottom:16px;">
-                                <label><input type="radio" name="ct_loai_tiec" value="Tiệc cưới" checked><span>Tiệc cưới</span></label>
-                                <label><input type="radio" name="ct_loai_tiec" value="Tiệc báo hỷ"><span>Tiệc báo hỷ</span></label>
-                                <label><input type="radio" name="ct_loai_tiec" value="Tiệc đính hôn"><span>Tiệc đính hôn</span></label>
-                            </div>
-                            <label class="lb" for="ct_tiec_tieude">Tiêu đề mục</label>
-                            <input type="text" id="ct_tiec_tieude" class="form-input" value="THÔNG TIN TIỆC CƯỚI">
-                            <p class="ct-hint">Tiêu đề in phía trên mục này trên thiệp. Để trống nếu bạn muốn bỏ hẳn.</p>
-                            <div class="ct-grid" style="margin-top:14px;">
-                                <div><label class="lb" for="ct_tiec_ngay">Ngày tổ chức</label><input type="date" id="ct_tiec_ngay" class="form-input"></div>
-                                <div><label class="lb" for="ct_tiec_gio">Giờ tổ chức</label><input type="time" id="ct_tiec_gio" class="form-input"></div>
-                            </div>
-                            <p class="ct-hint">Giờ chính hiển thị lớn trên thiệp, dùng cho đếm ngược và thêm vào lịch.</p>
-                            <label class="lb" style="margin-top:14px;">Định dạng giờ</label>
-                            <div class="seg">
-                                <label><input type="radio" name="ct_tiec_fmt" value="24 giờ"><span>24 giờ</span></label>
-                                <label><input type="radio" name="ct_tiec_fmt" value="Sáng/Chiều" checked><span>Sáng/Chiều</span></label>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="ct-sec collapsed" data-sec="lichtrinh">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>📋</span><span class="ct-name">Lịch trình ngày cưới</span>
-                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
-                        <div class="ct-body">
-                            <label class="lb" for="ct_lt_tieude">Tiêu đề</label>
-                            <input type="text" id="ct_lt_tieude" class="form-input" value="LỊCH TRÌNH NGÀY CƯỚI" style="margin-bottom:14px;">
-                            <div id="ct_lt_list"></div>
-                            <button type="button" class="ct-add" id="ct_lt_add">+ Thêm hoạt động</button>
-                        </div>
-                    </section>
-
-                    <section class="ct-sec collapsed" data-sec="camon">
-                        <div class="ct-head"><span class="ct-chev">▾</span><span>💬</span><span class="ct-name">Lời cảm ơn</span>
-                            <label class="ct-switch">Hiện<input type="checkbox" checked><i></i></label></div>
-                        <div class="ct-body">
-                            <label class="lb" for="ct_camon">Lời cảm ơn</label>
-                            <textarea id="ct_camon" class="form-input" rows="3">Sự hiện diện của quý khách là niềm vinh hạnh của gia đình chúng tôi!</textarea>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="form-group">
-                    <label for="yeu_cau_customize">Yêu cầu chỉnh sửa thêm (Customize)</label>
-                    <textarea id="yeu_cau_customize" class="form-input" rows="3" placeholder="VD: Đổi font chữ sang viền vàng kim, thêm mã QR Google Maps ở mặt sau..."></textarea>
-                </div>
-                <button type="submit" id="btn-submit" class="btn-primary">GỬI ĐƠN ĐẶT HÀNG</button>
-            </form>
-        </section>
-
-        <!-- KHU VỰC 3: BẢNG ĐƠN HÀNG -->
-        <section id="don-hang" class="section-box">
-            <h2 class="section-title">Danh Sách Đơn Hàng Mới Nhất</h2>
-            <p class="hint-text">👆 Nhấn vào một đơn hàng để xem toàn bộ thông tin</p>
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Mã đơn</th><th>Khách hàng</th><th>SĐT</th><th>Mã thiệp</th><th>Số lượng</th><th>Tổng tiền (VNĐ)</th><th>Trạng thái</th></tr>
-                    </thead>
-                    <tbody id="tbody-don-hang">
-                        <tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- KHU VỰC 4: BIỂU ĐỒ THỐNG KÊ -->
-        <section id="thong-ke" class="section-box">
-            <h2 class="section-title">Thống Kê Top 5 Mẫu Thiệp Bán Chạy Nhất</h2>
-            <div class="chart-wrapper" style="position: relative; height: 360px;"><canvas id="chart-luot-dat"></canvas></div>
-        </section>
-    </div>
-
-    <!-- POPUP: xem trước mẫu thiệp -->
-    <div id="preview-overlay" class="preview-overlay" aria-hidden="true">
-        <div class="preview-modal" role="dialog" aria-modal="true" aria-labelledby="pv-title">
-            <button type="button" class="pv-x" data-close aria-label="Đóng">&times;</button>
-            <div class="pv-img-wrap"><img id="pv-img" src="" alt=""></div>
-            <div class="pv-info">
-                <span class="pv-badge" id="pv-badge"></span>
-                <h3 class="pv-title" id="pv-title"></h3>
-                <div class="pv-price" id="pv-price"></div>
-                <div class="pv-sold" id="pv-sold"></div>
-                <div class="pv-scroll-hint">↕ Cuộn ảnh bên trái để xem toàn bộ thiệp</div>
-                <div class="pv-actions">
-                    <button type="button" class="pv-btn-order" id="pv-order">💍 Chọn mẫu này để đặt in</button>
-                    <button type="button" class="pv-btn-close" data-close>Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- POPUP: đăng nhập quản trị -->
-    <div id="ad-overlay" class="preview-overlay" aria-hidden="true">
-        <div class="od-modal" style="max-width:400px;" role="dialog" aria-modal="true" aria-labelledby="ad-title">
-            <button type="button" class="pv-x" data-close aria-label="Đóng">&times;</button>
-            <h3 class="od-title" id="ad-title">Đăng nhập quản trị</h3>
-            <p class="ct-hint" style="margin:0 0 14px;">Chỉ quản trị viên mới xem được số điện thoại đầy đủ, ảnh đôi và nội dung in thiệp chi tiết của khách.</p>
-            <form id="ad-form">
-                <div class="form-group"><label for="ad-email">Email</label><input type="email" id="ad-email" class="form-input" autocomplete="username" required></div>
-                <div class="form-group"><label for="ad-pass">Mật khẩu</label><input type="password" id="ad-pass" class="form-input" autocomplete="current-password" required></div>
-                <p id="ad-err" style="color:#c62828;font-weight:600;margin:0 0 10px;min-height:1.2em;"></p>
-                <button type="submit" id="ad-submit" class="btn-primary">ĐĂNG NHẬP</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- POPUP: chi tiết đơn hàng -->
-    <div id="od-overlay" class="preview-overlay" aria-hidden="true">
-        <div class="od-modal" role="dialog" aria-modal="true" aria-labelledby="od-title">
-            <button type="button" class="pv-x" data-close aria-label="Đóng">&times;</button>
-            <h3 class="od-title" id="od-title">Chi tiết đơn hàng</h3>
-            <div id="od-body"></div>
-            <div style="margin-top:18px;"><button type="button" class="pv-btn-close" data-close style="width:100%;">Đóng</button></div>
-        </div>
-    </div>
-
-    <footer></footer>
-
-   <!-- Thư viện Supabase & Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- File mã nguồn Javascript -->
-    <script src="script.js"></script>
-
-    <!-- JS: script.js (người phụ trách JS) PHẢI nạp trước, rồi mới đến script-extra.js -->
-    <script src="script.js"></script>
-    
-
-</body>
-</html>
+            <p class="hint-text">👆 Nhấn vào một mẫu
