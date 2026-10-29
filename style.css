@@ -1,5 +1,5 @@
 /* =========================================================
-   1. BIẾN TOÀN CỤC & RESET (TÔNG MÀU DREAMY / FAIRYCORE)
+   1. BIẾN TOÀN CỤC & RESET (TÔNG MÀU DREAMY RỰC RỠ)
    ========================================================= */
 :root {
     --primary: #C78BCA;       
@@ -7,6 +7,7 @@
     --text-dark: #5A4660;     
     --text-muted: #8E7C95;
     
+    /* Hiệu ứng Kính mờ (Glassmorphism) */
     --glass-bg: rgba(255, 255, 255, 0.45);
     --glass-border: rgba(255, 255, 255, 0.7);
     --glass-blur: blur(16px);
@@ -25,18 +26,100 @@
 
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background: fixed linear-gradient(135deg, #F4E8F8 0%, #E0F5F4 45%, #FCE7EE 100%);
+    /* Dải màu nền rực rỡ hơn: kết hợp Tím Nhạt - Cyan - Hồng Đào */
+    background: fixed linear-gradient(135deg, #FFD1FF 0%, #E0FAFA 30%, #FFE2ED 70%, #E8D8FF 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 15s ease infinite;
     color: var(--text-dark);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, .logo, .card-title {
+h1, h2, h3, .logo, .card-title, .lp-intro-title, .lp-title, .sec-title-main {
     font-family: 'Playfair Display', serif;
 }
 
 /* =========================================================
-   2. NAVBAR - HIỆU ỨNG KÍNH SIÊU MỜ
+   2. TRANG CHỦ (LANDING PAGE) - "LỘT XÁC" RỰC RỠ & MỘNG MƠ
+   ========================================================= */
+/* Bỏ nền xám của HTML, để lộ nền gradient của body */
+.landing, .lp-why, .lp-steps, .lp-testimonials, .lp-support, .lp-faq {
+    background: transparent !important; 
+}
+
+/* Thanh menu trên cùng của Landing */
+.lp-top {
+    background: rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+/* Chữ tiêu đề lấp lánh */
+.lp-intro-title, .sec-title-main {
+    background: linear-gradient(45deg, #C78BCA, #FF9A9E, #88B2CC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 12px rgba(255,255,255,0.6);
+}
+
+.sec-title-main span {
+    color: #FF9A9E !important;
+    -webkit-text-fill-color: #FF9A9E;
+}
+
+/* Biến các thẻ Card HTML thành thẻ kính (Glassmorphism) */
+.why-card, .step-card, .review-card, .support-box, .faq-item {
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: 0 8px 32px rgba(180, 160, 210, 0.15) !important;
+    transition: var(--transition-smooth) !important;
+}
+
+.why-card:hover, .step-card:hover, .review-card:hover, .faq-item:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 15px 40px rgba(199, 139, 202, 0.4) !important;
+    border-color: #FFFFFF !important;
+}
+
+/* Nút số thứ tự và icon rực rỡ */
+.step-num {
+    background: linear-gradient(135deg, #FF9A9E, #FECFEF, #C78BCA) !important;
+    color: var(--text-dark) !important;
+    box-shadow: 0 4px 15px rgba(199, 139, 202, 0.5) !important;
+}
+
+/* Banner Kêu gọi hành động (CTA) cực quang Holographic */
+.cta-banner {
+    background: linear-gradient(45deg, #C78BCA, #FF9A9E, #88B2CC, #C78BCA) !important;
+    background-size: 300% 300% !important;
+    animation: gradientShift 6s ease infinite !important;
+    border: 1px solid rgba(255,255,255,0.8);
+}
+.cta-text h3, .cta-text p {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* =========================================================
+   3. BĂNG CHUYỀN 3D (CAROUSEL)
+   ========================================================= */
+.cf-item {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.6);
+}
+.cf-item.center::after {
+    background: linear-gradient(45deg, #C78BCA, #FF9A9E) !important;
+    box-shadow: 0 4px 15px rgba(199, 139, 202, 0.4);
+    border: 1px solid #FFF;
+}
+.cf-dot.active {
+    background: linear-gradient(45deg, #C78BCA, #FF9A9E) !important;
+}
+
+/* =========================================================
+   4. NAVBAR & HERO (GIAO DIỆN CHÍNH)
    ========================================================= */
 .navbar {
     position: sticky;
@@ -44,7 +127,6 @@ h1, h2, h3, .logo, .card-title {
     z-index: 1000;
     background: rgba(255, 255, 255, 0.3);
     backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border);
     box-shadow: 0 4px 30px rgba(180, 150, 200, 0.15);
     display: flex;
@@ -89,9 +171,6 @@ h1, h2, h3, .logo, .card-title {
 .nav-links a:hover::after { width: 100%; }
 .nav-links a:hover { color: var(--primary); }
 
-/* =========================================================
-   3. HERO BANNER - CINEMATIC MỜ ẢO
-   ========================================================= */
 .hero {
     position: relative;
     display: flex;
@@ -121,7 +200,6 @@ h1, h2, h3, .logo, .card-title {
     inset: 0;
     background: linear-gradient(to bottom, rgba(200, 160, 220, 0.3) 0%, rgba(255, 180, 200, 0.5) 100%);
     backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
     z-index: -1;
 }
 
@@ -143,7 +221,7 @@ h1, h2, h3, .logo, .card-title {
 }
 
 /* =========================================================
-   4. BỐ CỤC CHUNG & GLASS BOXES
+   5. BỐ CỤC CHUNG & CÁC THẺ KÍNH
    ========================================================= */
 .container {
     max-width: 1200px;
@@ -154,7 +232,6 @@ h1, h2, h3, .logo, .card-title {
 .section-box {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 60px 50px;
@@ -179,7 +256,7 @@ h1, h2, h3, .logo, .card-title {
 }
 
 /* =========================================================
-   5. GRID MẪU THIỆP & FIX LỖI ẢNH BỊ CẮT XÉN
+   6. GRID MẪU THIỆP & ẢNH/VIDEO ĐỘNG
    ========================================================= */
 .filter-container {
     display: flex;
@@ -209,18 +286,17 @@ h1, h2, h3, .logo, .card-title {
 }
 
 .card {
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    border-radius: var(--radius-lg) !important;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 8px 32px rgba(180, 160, 210, 0.15);
-    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(180, 160, 210, 0.15) !important;
+    border: 1px solid var(--glass-border) !important;
     display: flex;
     flex-direction: column;
-    transition: var(--transition-smooth);
+    transition: var(--transition-smooth) !important;
     animation: fadeUpIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-    cursor: pointer; /* Đồng bộ với yêu cầu click của JS */
 }
 
 .card:nth-child(1) { animation-delay: 0.1s; }
@@ -228,31 +304,24 @@ h1, h2, h3, .logo, .card-title {
 .card:nth-child(3) { animation-delay: 0.3s; }
 
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-float);
-    border-color: #FFFFFF;
+    transform: translateY(-10px) !important;
+    box-shadow: var(--shadow-float) !important;
+    border-color: #FFFFFF !important;
 }
 
-/* FIX LỖI ẢNH: Không zoom nữa, ưu tiên giữ phần TOP của thiệp. Khi hover sẽ cuộn ảnh từ trên xuống dưới mượt mà */
-.card-img {
+/* Áp dụng cho cả IMG và VIDEO do script.js sinh ra */
+img.card-img, video.card-img {
     width: 100%;
-    height: 400px; /* Tăng chiều cao để thấy được nhiều nội dung thiệp hơn theo yêu cầu của bạn html */
+    height: 400px; 
     object-fit: cover;
-    object-position: top center; /* Bắt buộc: Luôn hiện phần ĐẦU thiệp */
+    object-position: top center !important; 
     opacity: 0.95; 
-    transition: object-position 4s ease-in-out; /* Cuộn mượt trong 4s */
-    
+    transition: object-position 4s ease-in-out;
     background-color: rgba(255, 255, 255, 0.2);
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-style: italic;
-    text-align: center;
-    line-height: 400px; 
 }
 
-/* Khi người dùng di chuột, ảnh sẽ từ từ cuộn xuống để cho họ xem phần dưới của thiệp */
-.card:hover .card-img {
-    object-position: bottom center; 
+.card:hover img.card-img, .card:hover video.card-img {
+    object-position: bottom center !important; 
     opacity: 1;
 }
 
@@ -312,7 +381,7 @@ h1, h2, h3, .logo, .card-title {
 }
 
 /* =========================================================
-   6. FORM ĐẶT HÀNG & CÁC TRƯỜNG NHẬP LIỆU
+   7. FORM ĐẶT HÀNG (TRONG SUỐT)
    ========================================================= */
 .order-section {
     background: rgba(255, 255, 255, 0.3);
@@ -341,14 +410,13 @@ h1, h2, h3, .logo, .card-title {
     font-size: 0.9rem;
 }
 
-/* Sửa lại .form-input để không bị đụng độ với JS */
 input.form-input, select.form-input, textarea.form-input {
     width: 100%;
     padding: 15px 20px;
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-sm);
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(4px);
     transition: var(--transition-smooth);
     outline: none;
@@ -357,17 +425,18 @@ input.form-input, select.form-input, textarea.form-input {
 }
 
 input.form-input:focus, select.form-input:focus, textarea.form-input:focus {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.9) !important;
     border-color: var(--primary);
     box-shadow: 0 0 0 4px rgba(199, 139, 202, 0.2);
 }
 
 textarea.form-input { min-height: 120px; resize: vertical; }
 
-.btn-primary {
-    background: linear-gradient(45deg, #C78BCA, #9CA2CD);
-    color: white;
-    border: none;
+.btn-primary, .pv-btn-order {
+    background: linear-gradient(45deg, #C78BCA, #FF9A9E, #88B2CC) !important;
+    background-size: 200% 200% !important;
+    color: white !important;
+    border: none !important;
     padding: 18px;
     width: 100%;
     font-size: 1.1rem;
@@ -375,23 +444,18 @@ textarea.form-input { min-height: 120px; resize: vertical; }
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: var(--transition-smooth);
-    box-shadow: 0 8px 20px rgba(199, 139, 202, 0.3);
+    box-shadow: 0 8px 20px rgba(199, 139, 202, 0.4) !important;
     margin-top: 10px;
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .pv-btn-order:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(199, 139, 202, 0.4);
-    background: linear-gradient(45deg, #AD6EAF, #8189BD);
-}
-
-.btn-primary:disabled {
-    background: rgba(200, 200, 200, 0.5);
-    box-shadow: none; transform: none; cursor: not-allowed;
+    box-shadow: 0 12px 25px rgba(199, 139, 202, 0.6) !important;
+    animation: gradientShift 3s ease infinite !important;
 }
 
 /* =========================================================
-   7. BẢNG DỮ LIỆU ĐƠN HÀNG (GLASS TABLE)
+   8. BẢNG DỮ LIỆU ĐƠN HÀNG (GLASS TABLE)
    ========================================================= */
 .table-responsive {
     overflow-x: auto;
@@ -443,7 +507,7 @@ textarea.form-input { min-height: 120px; resize: vertical; }
 }
 
 /* =========================================================
-   8. THỐNG KÊ & FOOTER
+   9. THỐNG KÊ, FOOTER & KEYFRAMES
    ========================================================= */
 .chart-wrapper {
     height: 450px;
@@ -460,9 +524,11 @@ footer {
     font-size: 0.95rem;
 }
 
-/* =========================================================
-   9. KEYFRAMES & RESPONSIVE
-   ========================================================= */
+@keyframes gradientShift { 
+    0% { background-position: 0% 50%; } 
+    50% { background-position: 100% 50%; } 
+    100% { background-position: 0% 50%; } 
+}
 @keyframes kenBurnsZoom { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
 @keyframes fadeDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
